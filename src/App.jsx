@@ -25,53 +25,58 @@ const firebaseConfig = {
 const appId = firebaseConfig.appId;
 
 // Initial placeholder songs (these are the "master" list of available songs)
-const defaultAvailableSongs = [
-    { id: 'placeholder-1', title: 'Hold Me Down', artist: 'Daniel Caesar', src: 'songs/Hold Me Down.mp3' },
-     { id: 'placeholder-2', title: 'Nikes', artist: 'Frank Ocean', src: 'songs/Nikes.mp3' },
-  { id: 'placeholder-3', title: 'Ivy', artist: 'Frank Ocean', src: 'songs/Ivy.mp3' },
-  { id: 'placeholder-4', title: 'Pink + White', artist: 'Frank Ocean', src: 'songs/pinkandwhite.mp3' },
-  { id: 'placeholder-5', title: 'Be Yourself', artist: 'Frank Ocean', src: 'songs/Be Yourself.mp3' },
-  { id: 'placeholder-6', title: 'Solo', artist: 'Frank Ocean', src: 'songs/Solo.mp3' },
-  { id: 'placeholder-7', title: 'Skyline To', artist: 'Frank Ocean', src: 'songs/Skyline To.mp3' },
-  { id: 'placeholder-8', title: 'Self Control', artist: 'Frank Ocean', src: 'https://khaoplokzfvxueaqgixx.supabase.co/storage/v1/object/public/data//Self%20Control.mp3'},
-  { id: 'placeholder-9', title: 'Good Guy', artist: 'Frank Ocean', src: 'songs/Good Guy.mp3' },
-  { id: 'placeholder-10', title: 'Nights', artist: 'Frank Ocean', src: 'songs/Nights.mp3' },
-  { id: 'placeholder-11', title: 'Solo (Reprise)', artist: 'Frank Ocean', src: 'songs/Solo (Reprise).mp3' },
-  { id: 'placeholder-12', title: 'Pretty Sweet', artist: 'Frank Ocean', src: 'songs/Pretty Sweet.mp3' },
-  { id: 'placeholder-13', title: 'Facebook Story', artist: 'Frank Ocean', src: 'songs/Facebook Story.mp3' },
-  { id: 'placeholder-14', title: 'Close To You', artist: 'Frank Ocean', src: 'songs/Close To You.mp3' },
-  { id: 'placeholder-15', title: 'White Ferrari', artist: 'Frank Ocean', src: 'songs/White Ferrari.mp3' },
-  { id: 'placeholder-16', title: 'Seigfried', artist: 'Frank Ocean', src: 'songs/Seigfried.mp3' },
-  { id: 'placeholder-17', title: 'Godspeed', artist: 'Frank Ocean', src: 'songs/Godspeed.mp3' },
-  { id: 'placeholder-18', title: 'Futura Free', artist: 'Frank Ocean', src: 'songs/Futura Free.mp3' },
-  { id: 'placeholder-19', title: 'Multo', artist: 'Cup of Joe', src: 'songs/Multo - Cup of Joe.mp3' },
-  { id: 'placeholder-20', title: 'back to friends', artist: 'sombr', src: 'songs/sombr - back to friends.mp3' },
-  { id: 'placeholder-21', title: 'You and Me', artist: 'Lifehouse', src: 'songs/You and Me - Lifehouse.mp3' },
-  { id: 'placeholder-22', title: 'Chairvoyant', artist: 'The Story So Far', src: 'songs/The Story So Far - Chairvoyant.mp3' },
-  { id: 'placeholder-23', title: 'La La Lost You', artist: 'NIKI', src: 'songs/NIKI- La La Lost You.mp3' },
-  { id: 'placeholder-24', title: 'Hold Me Down', artist: 'Daniel Caesar', src: 'songs/Daniel Caesar - Hold Me Down.mp3' },
-  { id: 'placeholder-25', title: 'Tibok', artist: 'Earl Agustin', src: 'songs/Tibok - Earl Agustin.mp3' },
-  { id: 'placeholder-26', title: "The Man Who Can't Be Moved", artist: 'The Script', src: "songs/The Script - The Man Who Can't Be Moved.mp3" },
-  { id: 'placeholder-27', title: 'I Like U', artist: 'Niki', src: 'songs/Niki- I Like U.mp3' },
-  { id: 'placeholder-28', title: 'Burnout', artist: 'Sugarfree', src: 'songs/Sugarfree - Burnout.mp3' },
-  { id: 'placeholder-29', title: 'DTfM', artist: 'Bad Bunny', src: 'songs/Bad Bunny - DtMF.mp3' },
-  { id: 'placeholder-30', title: 'Ribs', artist: 'Lorde', src: 'songs/Ribs - Lorde.mp3' },
-  { id: 'placeholder-31', title: 'Love Affair', artist: 'UMI', src: 'songs/UMI - Love Affair.mp3' },
-  { id: 'placeholder-32', title: 'The Scientist', artist: 'Coldplay', src: 'songs/Coldplay - The Scientist.mp3' },
-  { id: 'placeholder-33', title: "You'll Be in My Heart", artist: 'NIKI', src: "songs/NIKI - You'll be in my heart.mp3" },
-  { id: 'placeholder-34', title: 'Iris', artist: 'Goo Goo Dolls', src: 'songs/Goo Goo Dolls - Iris.mp3' },
-  { id: 'placeholder-35', title: 'Ikaw Lang', artist: 'Kiyo', src: 'songs/Kiyo - Ikaw Lang.mp3' },
-  { id: 'placeholder-36', title: 'Backburner', artist: 'NIKI', src: 'songs/NIKI -  Backburner.mp3' },
-  { id: 'placeholder-37', title: 'ILYSB', artist: 'LANY', src: 'songs/LANY - ILYSB.mp3' },
-  { id: 'placeholder-38', title: "I'll Be", artist: 'Edwin McCain', src: "songs/Edwin McCain - I'll Be.mp3" },
-  { id: 'placeholder-39', title: 'Your Universe', artist: 'Rico Blanco', src: 'songs/Rico Blanco - Your Universe.mp3' },
-  { id: 'placeholder-40', title: 'All We Know', artist: 'The Chainsmokers', src: 'songs/The Chainsmokers - All We Know.mp3' },
-  { id: 'placeholder-41', title: 'PARTY 4 U', artist: 'Charli XCX', src: 'songs/Charli XCX - PARTY 4 U.mp3' },
-  { id: 'placeholder-42', title: 'Dalangin', artist: 'Earl Agustin', src: 'songs/Dalangin - Earl Agustin.mp3' },
-  { id: 'placeholder-43', title: 'Tingin', artist: 'Cup of Joe, Janine', src: 'songs/Cup of Joe, Janine - Tingin.mp3' }
-    
+const supabaseBase = "https://khaoplokzfvxueaqgixx.supabase.co/storage/v1/object/public/data/";
 
+const defaultAvailableSongsRaw = [
+  { id: 'placeholder-1', title: 'Hold Me Down', artist: 'Daniel Caesar', filename: 'Hold Me Down.mp3' },
+  { id: 'placeholder-2', title: 'Nikes', artist: 'Frank Ocean', filename: 'Nikes.mp3' },
+  { id: 'placeholder-3', title: 'Ivy', artist: 'Frank Ocean', filename: 'Ivy.mp3' },
+  { id: 'placeholder-4', title: 'Pink + White', artist: 'Frank Ocean', filename: 'pinkandwhite.mp3' },
+  { id: 'placeholder-5', title: 'Be Yourself', artist: 'Frank Ocean', filename: 'Be Yourself.mp3' },
+  { id: 'placeholder-6', title: 'Solo', artist: 'Frank Ocean', filename: 'Solo.mp3' },
+  { id: 'placeholder-7', title: 'Skyline To', artist: 'Frank Ocean', filename: 'Skyline To.mp3' },
+  { id: 'placeholder-8', title: 'Self Control', artist: 'Frank Ocean', filename: 'Self Control.mp3' },
+  { id: 'placeholder-9', title: 'Good Guy', artist: 'Frank Ocean', filename: 'Good Guy.mp3' },
+  { id: 'placeholder-10', title: 'Nights', artist: 'Frank Ocean', filename: 'Nights.mp3' },
+  { id: 'placeholder-11', title: 'Solo (Reprise)', artist: 'Frank Ocean', filename: 'Solo (Reprise).mp3' },
+  { id: 'placeholder-12', title: 'Pretty Sweet', artist: 'Frank Ocean', filename: 'Pretty Sweet.mp3' },
+  { id: 'placeholder-13', title: 'Facebook Story', artist: 'Frank Ocean', filename: 'Facebook Story.mp3' },
+  { id: 'placeholder-14', title: 'Close To You', artist: 'Frank Ocean', filename: 'Close To You.mp3' },
+  { id: 'placeholder-15', title: 'White Ferrari', artist: 'Frank Ocean', filename: 'White Ferrari.mp3' },
+  { id: 'placeholder-16', title: 'Seigfried', artist: 'Frank Ocean', filename: 'Seigfried.mp3' },
+  { id: 'placeholder-17', title: 'Godspeed', artist: 'Frank Ocean', filename: 'Godspeed.mp3' },
+  { id: 'placeholder-18', title: 'Futura Free', artist: 'Frank Ocean', filename: 'Futura Free.mp3' },
+  { id: 'placeholder-19', title: 'Multo', artist: 'Cup of Joe', filename: 'Multo - Cup of Joe.mp3' },
+  { id: 'placeholder-20', title: 'back to friends', artist: 'sombr', filename: 'sombr - back to friends.mp3' },
+  { id: 'placeholder-21', title: 'You and Me', artist: 'Lifehouse', filename: 'You and Me - Lifehouse.mp3' },
+  { id: 'placeholder-22', title: 'Chairvoyant', artist: 'The Story So Far', filename: 'The Story So Far - Chairvoyant.mp3' },
+  { id: 'placeholder-23', title: 'La La Lost You', artist: 'NIKI', filename: 'NIKI- La La Lost You.mp3' },
+  { id: 'placeholder-24', title: 'Hold Me Down', artist: 'Daniel Caesar', filename: 'Daniel Caesar - Hold Me Down.mp3' },
+  { id: 'placeholder-25', title: 'Tibok', artist: 'Earl Agustin', filename: 'Tibok - Earl Agustin.mp3' },
+  { id: 'placeholder-26', title: "The Man Who Can't Be Moved", artist: 'The Script', filename: "The Script - The Man Who Can't Be Moved.mp3" },
+  { id: 'placeholder-27', title: 'I Like U', artist: 'Niki', filename: 'Niki- I Like U.mp3' },
+  { id: 'placeholder-28', title: 'Burnout', artist: 'Sugarfree', filename: 'Sugarfree - Burnout.mp3' },
+  { id: 'placeholder-29', title: 'DTfM', artist: 'Bad Bunny', filename: 'Bad Bunny - DtMF.mp3' },
+  { id: 'placeholder-30', title: 'Ribs', artist: 'Lorde', filename: 'Ribs - Lorde.mp3' },
+  { id: 'placeholder-31', title: 'Love Affair', artist: 'UMI', filename: 'UMI - Love Affair.mp3' },
+  { id: 'placeholder-32', title: 'The Scientist', artist: 'Coldplay', filename: 'Coldplay - The Scientist.mp3' },
+  { id: 'placeholder-33', title: "You'll Be in My Heart", artist: 'NIKI', filename: "NIKI - You'll be in my heart.mp3" },
+  { id: 'placeholder-34', title: 'Iris', artist: 'Goo Goo Dolls', filename: 'Goo Goo Dolls - Iris.mp3' },
+  { id: 'placeholder-35', title: 'Ikaw Lang', artist: 'Kiyo', filename: 'Kiyo - Ikaw Lang.mp3' },
+  { id: 'placeholder-36', title: 'Backburner', artist: 'NIKI', filename: 'NIKI -  Backburner.mp3' },
+  { id: 'placeholder-37', title: 'ILYSB', artist: 'LANY', filename: 'LANY - ILYSB.mp3' },
+  { id: 'placeholder-38', title: "I'll Be", artist: 'Edwin McCain', filename: "Edwin McCain - I'll Be.mp3" },
+  { id: 'placeholder-39', title: 'Your Universe', artist: 'Rico Blanco', filename: 'Rico Blanco - Your Universe.mp3' },
+  { id: 'placeholder-40', title: 'All We Know', artist: 'The Chainsmokers', filename: 'The Chainsmokers - All We Know.mp3' },
+  { id: 'placeholder-41', title: 'PARTY 4 U', artist: 'Charli XCX', filename: 'Charli XCX - PARTY 4 U.mp3' },
+  { id: 'placeholder-42', title: 'Dalangin', artist: 'Earl Agustin', filename: 'Dalangin - Earl Agustin.mp3' },
+  { id: 'placeholder-43', title: 'Tingin', artist: 'Cup of Joe, Janine', filename: 'Cup of Joe, Janine - Tingin.mp3' }
 ];
+
+const defaultAvailableSongs = defaultAvailableSongsRaw.map(song => ({
+  ...song,
+  src: encodeURI(supabaseBase + song.filename)
+}));
 
 // AddSongsToPlaylistModal Component (for adding multiple songs from available to a selected playlist)
 const AddSongsToPlaylistModal = ({ show, onClose, availableSongs, currentSongsInPlaylist, onAddSongs }) => {
@@ -1002,7 +1007,7 @@ const App = () => {
 
                         {filteredMainSongs.length === 0 ? (
                             <p className="text-gray-400 text-center flex-1 flex items-center justify-center">
-                                {selectedFirebasePlaylistId ? 'This playlist is empty. Add some songs!' : 'No songs available.'}
+                                {selectedFirebasePlaylistId ? 'empty' : 'No songs available.'}
                             </p>
                         ) : (
                             <ul className="space-y-3 overflow-y-auto custom-scrollbar pr-2 flex-1 min-h-0"> {/* Added min-h-0 */}
