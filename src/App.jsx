@@ -117,7 +117,29 @@ const defaultAvailableSongsRaw = [
   { id: 'placeholder-87', title: 'Statue', artist: 'Lil Eddie', filename: 'Lil Eddie - Statue.mp3' },
   { id: 'placeholder-88', title: 'death bed', artist: 'Powfu ft. Beabadoobee', filename: 'Powfu - death bed ft. beabadoobee.mp3' },
   { id: 'placeholder-89', title: "We Can't Stop", artist: 'Miley Cyrus', filename: "Miley Cyrus - We Can't Stop.mp3" },
-  { id: 'placeholder-90', title: 'Cold Water', artist: 'Major Lazer', filename: 'Major Lazer - Cold Water.mp3' }
+  { id: 'placeholder-90', title: 'Cold Water', artist: 'Major Lazer', filename: 'Major Lazer - Cold Water.mp3' },
+  { id: 'placeholder-91', title: 'not a lot, just forever', artist: 'Adrianne Lenker', filename: 'Adrianne Lenker - not a lot, just forever.mp3' },
+  { id: 'placeholder-92', title: 'If I Were a Boy', artist: 'Beyonce', filename: 'Beyonce - If I Were a Boy.mp3' },
+  { id: 'placeholder-93', title: 'Really', artist: 'BLACKPINK', filename: 'BLACKPINK - Really.mp3' },
+  { id: 'placeholder-94', title: 'Pyramid', artist: 'Charice', filename: 'Charice - Pyramid.mp3' },
+  { id: 'placeholder-95', title: 'Bubbly', artist: 'Colbie Caillat', filename: 'Colbie Caillat - Bubbly.mp3' },
+  { id: 'placeholder-96', title: 'Tonight', artist: 'FM Static', filename: 'FM Static - Tonight.mp3' },
+  { id: 'placeholder-97', title: 'La Vie en Rose', artist: 'IZ ONE', filename: 'IZ ONE - La Vie en Rose.mp3' },
+  { id: 'placeholder-98', title: 'Home', artist: 'Janet Suhh', filename: 'Janet Suhh - Home.mp3' },
+  { id: 'placeholder-99', title: 'Damn Right', artist: 'Jennie', filename: 'Jennie - Damn Right.mp3' },
+  { id: 'placeholder-100', title: 'Handlebars', artist: 'JENNIE', filename: 'JENNIE - Handlebars.mp3' },
+  { id: 'placeholder-101', title: 'Byahe', artist: 'John Roa', filename: 'John Roa - Byahe.mp3' },
+  { id: 'placeholder-102', title: 'Down To Earth', artist: 'Justin Bieber', filename: 'Justin Bieber - Down To Earth.mp3' },
+  { id: 'placeholder-103', title: 'Ghost Town', artist: 'Kanye West', filename: 'Kanye West - Ghost Town.mp3' },
+  { id: 'placeholder-104', title: 'Touch', artist: 'KATSEYE', filename: 'KATSEYE - Touch.mp3' },
+  { id: 'placeholder-105', title: 'You And Me', artist: 'Lifehouse', filename: 'Lifehouse - You And Me.mp3' },
+  { id: 'placeholder-106', title: "We Can't Stop", artist: 'Miley Cyrus', filename: 'Miley Cyrus - We Can\'t Stop.mp3' },
+  { id: 'placeholder-107', title: 'Oceans & Engines', artist: 'NIKI', filename: 'NIKI - Oceans & Engines.mp3' },
+  { id: 'placeholder-108', title: 'If I Could Fly', artist: 'One Direction', filename: 'One Direction - If I Could Fly.mp3' },
+  { id: 'placeholder-109', title: 'Ready to Run', artist: 'One Direction', filename: 'One Direction - Ready to Run.mp3' },
+  { id: 'placeholder-110', title: 'The Only Exception', artist: 'Paramore', filename: 'Paramore - The Only Exception.mp3' },
+  { id: 'placeholder-111', title: 'APT', artist: 'Rose', filename: 'Rose - APT.mp3' },
+  { id: 'placeholder-112', title: 'Look After You', artist: 'The Fray', filename: 'The Fray - Look After You.mp3' }
 ];
 
 const defaultAvailableSongs = defaultAvailableSongsRaw.map(song => ({
