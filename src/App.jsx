@@ -60,7 +60,7 @@ const defaultAvailableSongsRaw = [
   { id: 'placeholder-19', title: 'Multo', artist: 'Cup of Joe', filename: 'Multo - Cup of Joe.mp3' },
   { id: 'placeholder-20', title: 'back to friends', artist: 'sombr', filename: 'sombr - back to friends.mp3' },
   { id: 'placeholder-21', title: 'You and Me', artist: 'Lifehouse', filename: 'You and Me - Lifehouse.mp3' },
-  { id: 'placeholder-22', title: 'Chairvoyant', artist: 'The Story So Far', filename: 'The Story So Far - Chairvoyant.mp3' },
+  { id: 'placeholder-22', title: 'Clairvoyant', artist: 'The Story So Far', filename: 'The Story So Far - Chairvoyant.mp3' },
   { id: 'placeholder-23', title: 'La La Lost You', artist: 'NIKI', filename: 'NIKI- La La Lost You.mp3' },
   { id: 'placeholder-24', title: 'Toronto 2014', artist: 'Daniel Caesar', filename: 'Daniel Caesar - Toronto 2014.mp3' },
   { id: 'placeholder-25', title: 'Tibok', artist: 'Earl Agustin', filename: 'Tibok - Earl Agustin.mp3' },
