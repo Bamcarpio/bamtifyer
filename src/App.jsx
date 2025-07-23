@@ -99,6 +99,25 @@ const defaultAvailableSongsRaw = [
   { id: 'placeholder-69', title: 'SEE YOU AGAIN', artist: 'Tyler, The Creator', filename: 'Tyler, The Creator - SEE YOU AGAIN.mp3' },
   { id: 'placeholder-70', title: 'Bed Chem', artist: 'Sabrina Carpenter', filename: 'Sabrina Carpenter - Bed Chem.mp3' },
   { id: 'placeholder-71', title: 'supernatural', artist: 'Ariana Grande', filename: 'Ariana Grande - supernatural.mp3' },
+  { id: 'placeholder-72', title: 'Moment Of Truth', artist: 'Fm Static', filename: 'Fm Static - Moment Of Truth.mp3' },
+  { id: 'placeholder-73', title: 'Creep', artist: 'Radiohead', filename: 'Radiohead - Creep.mp3' },
+  { id: 'placeholder-74', title: 'All My Friends', artist: 'Snakehips', filename: 'Snakehips - All My Friends.mp3' },
+  { id: 'placeholder-75', title: 'Same Ground', artist: 'Kitchie Nadal', filename: 'Kitchie Nadal - Same Ground.mp3' },
+  { id: 'placeholder-76', title: 'No Surprises', artist: 'Radiohead', filename: 'Radiohead - No Surprises.mp3' },
+  { id: 'placeholder-77', title: 'Breakeven', artist: 'The Script', filename: 'The Script - Breakeven.mp3' },
+  { id: 'placeholder-78', title: 'All I Ever Need', artist: 'Austin Mahone', filename: 'Austin Mahone - All I Ever Need.mp3' },
+  { id: 'placeholder-79', title: 'PILLOWTALK', artist: 'ZAYN', filename: 'ZAYN - Pillowtalk.mp3' },
+  { id: 'placeholder-80', title: 'Coffee', artist: 'Beabadoobee', filename: 'Beabadoobee - Coffee.mp3' },
+  { id: 'placeholder-81', title: 'Middle', artist: 'DJ Snake ft. Bipolar Sunshine', filename: 'DJ Snake ft. Bipolar Sunshine - Middle.mp3' },
+  { id: 'placeholder-82', title: 'The Scientist', artist: 'Coldplay', filename: 'Coldplay - The Scientist.mp3' },
+  { id: 'placeholder-83', title: 'Almost Is Never Enough', artist: 'Ariana Grande', filename: 'Ariana Grande - Almost Is Never Enough.mp3' },
+  { id: 'placeholder-84', title: 'Roses', artist: 'The Chainsmokers', filename: 'The Chainsmokers - Roses.mp3' },
+  { id: 'placeholder-85', title: 'All We Know', artist: 'The Chainsmokers', filename: 'All We Know.mp3' },
+  { id: 'placeholder-86', title: 'Closer', artist: 'The Chainsmokers ft. Halsey', filename: 'The Chainsmokers - Closer ft. Halsey.mp3' },
+  { id: 'placeholder-87', title: 'Statue', artist: 'Lil Eddie', filename: 'Lil Eddie - Statue.mp3' },
+  { id: 'placeholder-88', title: 'death bed', artist: 'Powfu ft. Beabadoobee', filename: 'Powfu - death bed ft. beabadoobee.mp3' },
+  { id: 'placeholder-89', title: "We Can't Stop", artist: 'Miley Cyrus', filename: "Miley Cyrus - We Can't Stop.mp3" },
+  { id: 'placeholder-90', title: 'Cold Water', artist: 'Major Lazer', filename: 'Major Lazer - Cold Water.mp3' }
 ];
 
 const defaultAvailableSongs = defaultAvailableSongsRaw.map(song => ({
