@@ -117,7 +117,7 @@ const defaultAvailableSongsRaw = [
   { id: 'placeholder-87', title: 'Statue', artist: 'Lil Eddie', filename: 'Lil Eddie - Statue.mp3' },
   { id: 'placeholder-88', title: 'death bed', artist: 'Powfu ft. Beabadoobee', filename: 'Powfu - death bed ft. beabadoobee.mp3' },
   { id: 'placeholder-89', title: "We Can't Stop", artist: 'Miley Cyrus', filename: "Miley Cyrus - We Can't Stop.mp3" },
-  { id: 'placeholder-90', title: 'Cold Water', artist: 'Major Lazer', filename: 'Major Lazer - Cold Water.mp3' }
+  { id: 'placeholder-90', title: 'Cold Water', artist: 'Major Lazer', filename: 'Major Lazer - Cold Water.mp3' },
 ];
 
 const defaultAvailableSongs = defaultAvailableSongsRaw.map(song => ({
