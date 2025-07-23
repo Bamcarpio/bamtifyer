@@ -1,0 +1,1073 @@
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Play, Pause, SkipForward, SkipBack, Shuffle, Repeat, Music, Volume2, VolumeX, Plus, X, Search, LogOut, ArrowLeft } from 'lucide-react'; // Added ArrowLeft icon
+
+// Firebase imports
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { getDatabase, ref, push, onValue, remove, get, update } from 'firebase/database';
+
+// Global variables provided by the Canvas environment (initialAuthToken is no longer used for anonymous login)
+const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+// Firebase configuration provided by the user
+const firebaseConfig = {
+  apiKey: "AIzaSyDlT5sCVMBZSWqYTu9hhstp4Fr7N66SWss",
+  authDomain: "faceattendancerealtime-fbdf2.firebaseapp.com",
+  databaseURL: "https://faceattendancerealtime-fbdf2-default-rtdb.firebaseio.com",
+  projectId: "faceattendancerealtime-fbdf2",
+  storageBucket: "faceattendancerealtime-fbdf2.appspot.com",
+  messagingSenderId: "338410759674",
+  appId: "1:338410759674:web:51fc5d6846c979ef8a3043",
+  measurementId: "G-Z1M0VF25TP"
+};
+
+// Use the appId from the provided firebaseConfig
+const appId = firebaseConfig.appId;
+
+// Initial placeholder songs (these are the "master" list of available songs)
+const defaultAvailableSongs = [
+    { id: 'placeholder-1', title: 'Hold Me Down', artist: 'Daniel Caesar', src: 'songs/Hold Me Down.mp3' },
+     { id: 'placeholder-2', title: 'Nikes', artist: 'Frank Ocean', src: 'songs/Nikes.mp3' },
+  { id: 'placeholder-3', title: 'Ivy', artist: 'Frank Ocean', src: 'songs/Ivy.mp3' },
+  { id: 'placeholder-4', title: 'Pink + White', artist: 'Frank Ocean', src: 'songs/pinkandwhite.mp3' },
+  { id: 'placeholder-5', title: 'Be Yourself', artist: 'Frank Ocean', src: 'songs/Be Yourself.mp3' },
+  { id: 'placeholder-6', title: 'Solo', artist: 'Frank Ocean', src: 'songs/Solo.mp3' },
+  { id: 'placeholder-7', title: 'Skyline To', artist: 'Frank Ocean', src: 'songs/Skyline To.mp3' },
+  { id: 'placeholder-8', title: 'Self Control', artist: 'Frank Ocean', src: 'https://khaoplokzfvxueaqgixx.supabase.co/storage/v1/object/public/data//Self%20Control.mp3'},
+  { id: 'placeholder-9', title: 'Good Guy', artist: 'Frank Ocean', src: 'songs/Good Guy.mp3' },
+  { id: 'placeholder-10', title: 'Nights', artist: 'Frank Ocean', src: 'songs/Nights.mp3' },
+  { id: 'placeholder-11', title: 'Solo (Reprise)', artist: 'Frank Ocean', src: 'songs/Solo (Reprise).mp3' },
+  { id: 'placeholder-12', title: 'Pretty Sweet', artist: 'Frank Ocean', src: 'songs/Pretty Sweet.mp3' },
+  { id: 'placeholder-13', title: 'Facebook Story', artist: 'Frank Ocean', src: 'songs/Facebook Story.mp3' },
+  { id: 'placeholder-14', title: 'Close To You', artist: 'Frank Ocean', src: 'songs/Close To You.mp3' },
+  { id: 'placeholder-15', title: 'White Ferrari', artist: 'Frank Ocean', src: 'songs/White Ferrari.mp3' },
+  { id: 'placeholder-16', title: 'Seigfried', artist: 'Frank Ocean', src: 'songs/Seigfried.mp3' },
+  { id: 'placeholder-17', title: 'Godspeed', artist: 'Frank Ocean', src: 'songs/Godspeed.mp3' },
+  { id: 'placeholder-18', title: 'Futura Free', artist: 'Frank Ocean', src: 'songs/Futura Free.mp3' },
+  { id: 'placeholder-19', title: 'Multo', artist: 'Cup of Joe', src: 'songs/Multo - Cup of Joe.mp3' },
+  { id: 'placeholder-20', title: 'back to friends', artist: 'sombr', src: 'songs/sombr - back to friends.mp3' },
+  { id: 'placeholder-21', title: 'You and Me', artist: 'Lifehouse', src: 'songs/You and Me - Lifehouse.mp3' },
+  { id: 'placeholder-22', title: 'Chairvoyant', artist: 'The Story So Far', src: 'songs/The Story So Far - Chairvoyant.mp3' },
+  { id: 'placeholder-23', title: 'La La Lost You', artist: 'NIKI', src: 'songs/NIKI- La La Lost You.mp3' },
+  { id: 'placeholder-24', title: 'Hold Me Down', artist: 'Daniel Caesar', src: 'songs/Daniel Caesar - Hold Me Down.mp3' },
+  { id: 'placeholder-25', title: 'Tibok', artist: 'Earl Agustin', src: 'songs/Tibok - Earl Agustin.mp3' },
+  { id: 'placeholder-26', title: "The Man Who Can't Be Moved", artist: 'The Script', src: "songs/The Script - The Man Who Can't Be Moved.mp3" },
+  { id: 'placeholder-27', title: 'I Like U', artist: 'Niki', src: 'songs/Niki- I Like U.mp3' },
+  { id: 'placeholder-28', title: 'Burnout', artist: 'Sugarfree', src: 'songs/Sugarfree - Burnout.mp3' },
+  { id: 'placeholder-29', title: 'DTfM', artist: 'Bad Bunny', src: 'songs/Bad Bunny - DtMF.mp3' },
+  { id: 'placeholder-30', title: 'Ribs', artist: 'Lorde', src: 'songs/Ribs - Lorde.mp3' },
+  { id: 'placeholder-31', title: 'Love Affair', artist: 'UMI', src: 'songs/UMI - Love Affair.mp3' },
+  { id: 'placeholder-32', title: 'The Scientist', artist: 'Coldplay', src: 'songs/Coldplay - The Scientist.mp3' },
+  { id: 'placeholder-33', title: "You'll Be in My Heart", artist: 'NIKI', src: "songs/NIKI - You'll be in my heart.mp3" },
+  { id: 'placeholder-34', title: 'Iris', artist: 'Goo Goo Dolls', src: 'songs/Goo Goo Dolls - Iris.mp3' },
+  { id: 'placeholder-35', title: 'Ikaw Lang', artist: 'Kiyo', src: 'songs/Kiyo - Ikaw Lang.mp3' },
+  { id: 'placeholder-36', title: 'Backburner', artist: 'NIKI', src: 'songs/NIKI -  Backburner.mp3' },
+  { id: 'placeholder-37', title: 'ILYSB', artist: 'LANY', src: 'songs/LANY - ILYSB.mp3' },
+  { id: 'placeholder-38', title: "I'll Be", artist: 'Edwin McCain', src: "songs/Edwin McCain - I'll Be.mp3" },
+  { id: 'placeholder-39', title: 'Your Universe', artist: 'Rico Blanco', src: 'songs/Rico Blanco - Your Universe.mp3' },
+  { id: 'placeholder-40', title: 'All We Know', artist: 'The Chainsmokers', src: 'songs/The Chainsmokers - All We Know.mp3' },
+  { id: 'placeholder-41', title: 'PARTY 4 U', artist: 'Charli XCX', src: 'songs/Charli XCX - PARTY 4 U.mp3' },
+  { id: 'placeholder-42', title: 'Dalangin', artist: 'Earl Agustin', src: 'songs/Dalangin - Earl Agustin.mp3' },
+  { id: 'placeholder-43', title: 'Tingin', artist: 'Cup of Joe, Janine', src: 'songs/Cup of Joe, Janine - Tingin.mp3' }
+    
+
+];
+
+// AddSongsToPlaylistModal Component (for adding multiple songs from available to a selected playlist)
+const AddSongsToPlaylistModal = ({ show, onClose, availableSongs, currentSongsInPlaylist, onAddSongs }) => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedSongIds, setSelectedSongIds] = useState([]);
+
+    // Effect to reset selected songs and filter when modal opens/closes
+    useEffect(() => {
+        if (show) {
+            // Initialize selected songs with those already in the playlist
+            const initialSelected = currentSongsInPlaylist.map(song => song.id);
+            setSelectedSongIds(initialSelected);
+            setSearchTerm(''); // Clear search term on open
+        }
+    }, [show, currentSongsInPlaylist]);
+
+    const filteredSongs = availableSongs.filter(song =>
+        song.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        song.artist.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const handleCheckboxChange = (songId) => {
+        setSelectedSongIds(prev =>
+            prev.includes(songId)
+                ? prev.filter(id => id !== songId)
+                : [...prev, songId]
+        );
+    };
+
+    const handleAddClick = () => {
+        const songsToAdd = selectedSongIds
+            .filter(id => !currentSongsInPlaylist.some(s => s.id === id)) // Only add new songs
+            .map(id => availableSongs.find(song => song.id === id));
+        onAddSongs(songsToAdd.filter(Boolean)); // Filter out any undefined if find fails
+        onClose();
+    };
+
+    if (!show) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+            <div className="bg-zinc-800 p-6 rounded-lg shadow-xl w-[500px] max-h-[80vh] flex flex-col">
+                <h3 className="text-xl font-bold mb-4 text-white"></h3>
+                <div className="relative mb-4">
+                  
+                    <input
+                        type="text"
+                        placeholder="search"
+                        className="w-full pl-4 pr-4 py-2 rounded-md bg-zinc-700 text-white border border-zinc-600 focus:outline-none focus:border-green-500"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                <ul className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-2 mb-4">
+                    {filteredSongs.length === 0 ? (
+                        <p className="text-gray-400 text-sm text-center">No songs found.</p>
+                    ) : (
+                        filteredSongs.map(song => {
+                            const isAlreadyInPlaylist = currentSongsInPlaylist.some(s => s.id === song.id);
+                            const isSelected = selectedSongIds.includes(song.id);
+                            return (
+                                <li
+                                    key={song.id}
+                                    className={`flex items-center p-3 rounded-md transition-colors duration-200 ${
+                                        isAlreadyInPlaylist ? 'bg-zinc-600 text-gray-500' : 'bg-zinc-700 text-gray-300 hover:bg-zinc-600 cursor-pointer'
+                                    }`}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={isSelected || isAlreadyInPlaylist}
+                                        onChange={() => handleCheckboxChange(song.id)}
+                                        disabled={isAlreadyInPlaylist}
+                                        className="mr-3 h-5 w-5 rounded text-green-500 focus:ring-green-500 bg-zinc-600 border-zinc-500 cursor-pointer disabled:cursor-not-allowed"
+                                    />
+                                    <div className="flex-1">
+                                        <p className="font-semibold text-lg">{song.title}</p>
+                                        <p className="text-sm text-gray-400">{song.artist}</p>
+                                    </div>
+                                    {isAlreadyInPlaylist && <span className="text-green-400 text-sm">Added</span>}
+                                </li>
+                            );
+                        })
+                    )}
+                </ul>
+                <div className="flex justify-end space-x-4 mt-4">
+                    <button
+                        onClick={onClose}
+                        className="px-6 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-500 transition-colors duration-200"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleAddClick}
+                        className="px-6 py-2 bg-green-500 text-black font-bold rounded-full hover:bg-green-400 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={selectedSongIds.filter(id => !currentSongsInPlaylist.some(s => s.id === id)).length === 0}
+                    >
+                        Add Selected Songs
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// SelectPlaylistForSongModal Component (for adding a single song to any playlist)
+const SelectPlaylistForSongModal = ({ show, onClose, playlists, songToAdd, onAddSingleSongToPlaylist }) => {
+    if (!show) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+            <div className="bg-zinc-800 p-6 rounded-lg shadow-xl w-96 max-h-[80vh] flex flex-col">
+                <h3 className="text-xl font-bold mb-4 text-white">Add "{songToAdd?.title}" to...</h3>
+                <ul className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-2 mb-4">
+                    {playlists.length === 0 ? (
+                        <p className="text-gray-400 text-sm text-center"></p>
+                    ) : (
+                        playlists.map(pl => (
+                            <li
+                                key={pl.id}
+                                onClick={() => onAddSingleSongToPlaylist(pl.id, songToAdd)}
+                                className="p-3 rounded-md cursor-pointer bg-zinc-700 text-gray-300 hover:bg-zinc-600 transition-colors duration-200"
+                            >
+                                {pl.name}
+                            </li>
+                        ))
+                    )}
+                </ul>
+                <button
+                    onClick={onClose}
+                    className="px-4 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-500 transition-colors duration-200"
+                >
+                    Cancel
+                </button>
+            </div>
+        </div>
+    );
+};
+
+
+// Main App Component
+const App = () => {
+    // Firebase states
+    const [db, setDb] = useState(null);
+    const [auth, setAuth] = useState(null);
+    const [userId, setUserId] = useState(null);
+    const [isAuthReady, setIsAuthReady] = useState(false); // To ensure Firebase is initialized and auth is ready
+
+    // Login states
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loginError, setLoginError] = useState('');
+    const [isLoadingAuth, setIsLoadingAuth] = useState(true); // New state for initial auth loading
+
+    // Player states
+    const [playlist, setPlaylist] = useState([]); // This is the currently active playlist in the player
+    const [currentSongIndex, setCurrentSongIndex] = useState(0);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [repeatMode, setRepeatMode] = useState('off'); // 'off', 'one', 'all'
+    const [isShuffling, setIsShuffling] = useState(false);
+    const [originalPlaylist, setOriginalPlaylist] = useState([]); // Used for shuffle logic
+    const [shuffledPlaylist, setShuffledPlaylist] = useState([]);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
+    const [volume, setVolume] = useState(0.7);
+    const [prevVolume, setPrevVolume] = useState(0.7);
+    const audioRef = useRef(null);
+
+    // Firebase Playlist states
+    const [userPlaylists, setUserPlaylists] = useState([]); // List of playlists fetched from Firebase
+    const [selectedFirebasePlaylistId, setSelectedFirebasePlaylistId] = useState(null);
+    const [selectedFirebasePlaylistSongs, setSelectedFirebasePlaylistSongs] = useState([]); // Songs of the currently selected Firebase playlist
+    const [showAddSongsToPlaylistModal, setShowAddSongsToPlaylistModal] = useState(false); // For multi-select modal
+    const [showSelectPlaylistForSongModal, setShowSelectPlaylistForSongModal] = useState(false); // For single song add modal
+    const [songToAddToSpecificPlaylist, setSongToAddToSpecificPlaylist] = useState(null); // The song clicked from available songs
+
+    // New state for main song list search
+    const [mainSearchTerm, setMainSearchTerm] = useState('');
+
+    // Determine the current song being played from the active playlist
+    const currentSong = playlist[currentSongIndex];
+
+
+    // --- Firebase Initialization and Authentication ---
+    useEffect(() => {
+        try {
+            const firebaseApp = initializeApp(firebaseConfig);
+            const database = getDatabase(firebaseApp);
+            const authentication = getAuth(firebaseApp);
+
+            setDb(database);
+            setAuth(authentication);
+
+            // Listen for auth state changes to persist login
+            const unsubscribe = onAuthStateChanged(authentication, (user) => {
+                if (user) {
+                    setUserId(user.uid);
+                } else {
+                    setUserId(null); // User is logged out
+                }
+                setIsAuthReady(true);
+                setIsLoadingAuth(false); // Authentication check is complete
+            });
+
+            return () => unsubscribe(); // Cleanup auth listener
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+            setIsLoadingAuth(false); // Stop loading even if there's an error
+        }
+    }, []); // Run only once on component mount
+
+    // --- Email/Password Login Function ---
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setLoginError(''); // Clear previous errors
+        if (!auth) {
+            setLoginError("Firebase Auth not initialized.");
+            return;
+        }
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            // User is automatically set by onAuthStateChanged
+            console.log("Logged in successfully!");
+        } catch (error) {
+            console.error("Login error:", error);
+            let errorMessage = "failed mali password";
+            if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                errorMessage = "Invalid email or password.";
+            } else if (error.code === 'auth/invalid-email') {
+                errorMessage = "Invalid email format.";
+            }
+            setLoginError(errorMessage);
+        }
+    };
+
+    // --- Logout Function ---
+    const handleLogout = async () => {
+        if (!auth) {
+            console.error("Firebase Auth not initialized.");
+            return;
+        }
+        try {
+            await signOut(auth);
+            // userId will be set to null by onAuthStateChanged
+            setPlaylist(defaultAvailableSongs); // Reset playlist to available songs on logout
+            setOriginalPlaylist(defaultAvailableSongs);
+            setCurrentSongIndex(0);
+            setIsPlaying(false);
+            setSelectedFirebasePlaylistId(null);
+            setSelectedFirebasePlaylistSongs([]); // Clear selected playlist songs
+            console.log("Logged out successfully!");
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
+    };
+
+
+    // --- Load Playlists from Firebase ---
+    useEffect(() => {
+        if (isAuthReady && db && userId) {
+            const playlistsRef = ref(db, `artifacts/${appId}/users/${userId}/playlists`);
+            const unsubscribe = onValue(playlistsRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    const loadedPlaylists = Object.keys(data).map(key => ({
+                        id: key,
+                        ...data[key]
+                    }));
+                    setUserPlaylists(loadedPlaylists);
+
+                    // If a playlist was previously selected, try to reload its songs
+                    if (selectedFirebasePlaylistId) {
+                        const currentSelected = loadedPlaylists.find(pl => pl.id === selectedFirebasePlaylistId);
+                        if (currentSelected) {
+                            setPlaylist(currentSelected.songs || []);
+                            setOriginalPlaylist(currentSelected.songs || []);
+                            setSelectedFirebasePlaylistSongs(currentSelected.songs || []);
+                        } else {
+                            // Selected playlist was deleted or not found, revert to available songs
+                            setSelectedFirebasePlaylistId(null);
+                            setPlaylist(defaultAvailableSongs);
+                            setOriginalPlaylist(defaultAvailableSongs);
+                            setSelectedFirebasePlaylistSongs([]);
+                            setCurrentSongIndex(0);
+                            setIsPlaying(false);
+                        }
+                    }
+                } else {
+                    setUserPlaylists([]);
+                    // If no playlists, ensure player shows available songs
+                    setSelectedFirebasePlaylistId(null);
+                    setPlaylist(defaultAvailableSongs);
+                    setOriginalPlaylist(defaultAvailableSongs);
+                    setSelectedFirebasePlaylistSongs([]);
+                    setCurrentSongIndex(0);
+                    setIsPlaying(false);
+                }
+            }, (error) => {
+                console.error("Error fetching playlists from Firebase:", error);
+            });
+
+            return () => unsubscribe(); // Cleanup listener
+        } else if (isAuthReady && !userId) {
+            // If auth is ready but no user, clear playlists and show default available songs
+            setUserPlaylists([]);
+            setSelectedFirebasePlaylistId(null);
+            setPlaylist(defaultAvailableSongs);
+            setOriginalPlaylist(defaultAvailableSongs);
+            setSelectedFirebasePlaylistSongs([]);
+            setCurrentSongIndex(0);
+            setIsPlaying(false);
+        }
+    }, [isAuthReady, db, userId, appId, selectedFirebasePlaylistId]); // Added selectedFirebasePlaylistId to dependency array
+
+    // --- Initial Song Loading (for default view) ---
+    useEffect(() => {
+        // This effect ensures that defaultAvailableSongs are loaded when the component mounts
+        // and no Firebase playlist is selected initially.
+        if (!selectedFirebasePlaylistId) {
+            setPlaylist(defaultAvailableSongs);
+            setOriginalPlaylist(defaultAvailableSongs);
+        }
+    }, [selectedFirebasePlaylistId]); // Only re-run if selectedFirebasePlaylistId changes
+
+    // --- Player Logic ---
+    useEffect(() => {
+        if (audioRef.current) {
+            if (isPlaying) {
+                audioRef.current.play().catch(e => console.error("Error playing audio:", e));
+            } else {
+                audioRef.current.pause();
+            }
+        }
+    }, [isPlaying, currentSongIndex, playlist]); // Re-run when song changes or playlist updates
+
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.volume = volume;
+        }
+    }, [volume]);
+
+    const handlePlayPause = useCallback(() => {
+        if (playlist.length === 0) return;
+        setIsPlaying(prev => !prev);
+    }, [playlist.length]);
+
+    const playSong = useCallback((index) => {
+        if (index >= 0 && index < playlist.length) {
+            setCurrentSongIndex(index);
+            setIsPlaying(true);
+        }
+    }, [playlist.length]);
+
+    const handleNext = useCallback(() => {
+        if (playlist.length === 0) return;
+
+        let nextIndex;
+        if (isShuffling) {
+            const currentShuffledIndex = shuffledPlaylist.findIndex(song => song.id === playlist[currentSongIndex].id);
+            nextIndex = (currentShuffledIndex + 1) % shuffledPlaylist.length;
+            setCurrentSongIndex(playlist.findIndex(song => song.id === shuffledPlaylist[nextIndex].id));
+        } else {
+            nextIndex = (currentSongIndex + 1) % playlist.length;
+            setCurrentSongIndex(nextIndex);
+        }
+        setIsPlaying(true);
+    }, [currentSongIndex, playlist, isShuffling, shuffledPlaylist]);
+
+    const handlePrev = useCallback(() => {
+        if (playlist.length === 0) return;
+
+        let prevIndex;
+        if (isShuffling) {
+            const currentShuffledIndex = shuffledPlaylist.findIndex(song => song.id === playlist[currentSongIndex].id);
+            prevIndex = (currentShuffledIndex - 1 + shuffledPlaylist.length) % shuffledPlaylist.length;
+            setCurrentSongIndex(playlist.findIndex(song => song.id === shuffledPlaylist[prevIndex].id));
+        } else {
+            prevIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
+            setCurrentSongIndex(prevIndex);
+        }
+        setIsPlaying(true);
+    }, [currentSongIndex, playlist, isShuffling, shuffledPlaylist]);
+
+    const handleSongEnded = useCallback(() => {
+        if (playlist.length === 0) {
+            setIsPlaying(false);
+            return;
+        }
+
+        if (repeatMode === 'one') {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play();
+        } else if (repeatMode === 'all' || isShuffling) {
+            handleNext();
+        } else {
+            if (currentSongIndex === playlist.length - 1) {
+                setIsPlaying(false);
+            } else {
+                handleNext();
+            }
+        }
+    }, [currentSongIndex, playlist.length, repeatMode, isShuffling, handleNext]);
+
+    const handleRepeat = useCallback(() => {
+        setRepeatMode(prev => {
+            if (prev === 'off') return 'all';
+            if (prev === 'all') return 'one';
+            return 'off';
+        });
+    }, []);
+
+    const handleShuffle = useCallback(() => {
+        setIsShuffling(prev => {
+            if (!prev) {
+                const shuffled = [...originalPlaylist].sort(() => Math.random() - 0.5);
+                setShuffledPlaylist(shuffled);
+                const currentSongInShuffled = shuffled.findIndex(song => song.id === playlist[currentSongIndex].id);
+                setCurrentSongIndex(playlist.findIndex(song => song.id === shuffled[currentSongInShuffled].id));
+            } else {
+                const currentSongId = playlist[currentSongIndex].id;
+                const originalIndex = originalPlaylist.findIndex(song => song.id === currentSongId);
+                setCurrentSongIndex(originalIndex);
+            }
+            return !prev;
+        });
+    }, [currentSongIndex, playlist, originalPlaylist]);
+
+    // --- Firebase Playlist Management ---
+    const handleCreatePlaylist = useCallback(async () => {
+        if (!db || !userId) {
+            console.error("Firebase not initialized or user not authenticated.");
+            return;
+        }
+
+        const playlistName = prompt("Enter a name for your new playlist:");
+        if (playlistName && playlistName.trim() !== '') {
+            try {
+                const playlistsRef = ref(db, `artifacts/${appId}/users/${userId}/playlists`);
+                await push(playlistsRef, {
+                    name: playlistName.trim(),
+                    songs: [] // Initialize with an empty array
+                });
+                console.log("Playlist created successfully!");
+            } catch (error) {
+                console.error("Error creating playlist:", error);
+            }
+        }
+    }, [db, userId, appId]);
+
+    const selectFirebasePlaylist = useCallback(async (playlistId) => {
+        if (!db || !userId) {
+            console.error("Firebase not initialized or user not authenticated.");
+            return;
+        }
+        setSelectedFirebasePlaylistId(playlistId);
+
+        try {
+            const playlistRef = ref(db, `artifacts/${appId}/users/${userId}/playlists/${playlistId}`);
+            const snapshot = await get(playlistRef);
+            const data = snapshot.val();
+            const songs = data && data.songs ? data.songs : []; // Ensure songs is an array
+            setPlaylist(songs); // Load songs from selected Firebase playlist into player
+            setOriginalPlaylist(songs); // Update original for shuffle
+            setSelectedFirebasePlaylistSongs(songs); // Store for modal
+            setCurrentSongIndex(0);
+            setIsPlaying(false);
+        }
+        catch (error) {
+            console.error("Error loading selected playlist:", error);
+        }
+    }, [db, userId, appId]);
+
+    // Function to delete a song from the currently selected Firebase playlist
+    const handleDeleteSongFromPlaylist = useCallback(async (songIdToDelete) => {
+        if (!db || !userId || !selectedFirebasePlaylistId) {
+            console.error("Cannot delete song: Firebase not ready, user not authenticated, or no playlist selected.");
+            return;
+        }
+
+        try {
+            const playlistRef = ref(db, `artifacts/${appId}/users/${userId}/playlists/${selectedFirebasePlaylistId}`);
+            const snapshot = await get(playlistRef);
+            const currentPlaylistData = snapshot.val();
+            const currentSongs = currentPlaylistData && currentPlaylistData.songs ? currentPlaylistData.songs : [];
+
+            const updatedSongs = currentSongs.filter(song => song.id !== songIdToDelete);
+
+            await update(playlistRef, { songs: updatedSongs });
+            console.log(`Song with ID "${songIdToDelete}" deleted from playlist.`);
+
+            // Explicitly update local state after Firebase write
+            setPlaylist(updatedSongs);
+            setOriginalPlaylist(updatedSongs);
+            setSelectedFirebasePlaylistSongs(updatedSongs);
+
+            // If the deleted song was the current one, reset playback
+            if (currentSong && currentSong.id === songIdToDelete) {
+                setIsPlaying(false);
+                setCurrentSongIndex(0); // Reset to first song or no song
+            } else if (currentSongIndex >= updatedSongs.length && updatedSongs.length > 0) {
+                // Adjust current index if it's out of bounds after deletion
+                setCurrentSongIndex(updatedSongs.length - 1);
+            } else if (updatedSongs.length === 0) {
+                setCurrentSongIndex(0);
+                setIsPlaying(false);
+            }
+
+        } catch (error) {
+            console.error("Error deleting song from playlist:", error);
+        }
+    }, [db, userId, appId, selectedFirebasePlaylistId, currentSong, currentSongIndex]);
+
+    // Function to delete an entire playlist from Firebase
+    const handleDeletePlaylist = useCallback(async (playlistIdToDelete, playlistName) => {
+        if (!db || !userId) {
+            console.error("Firebase not ready or user not authenticated.");
+            return;
+        }
+
+        const confirmDelete = prompt(`Are you sure you want to delete the playlist "${playlistName}"? Type "bam" to confirm.`);
+
+        if (confirmDelete && confirmDelete.toLowerCase() === 'bam') {
+            try {
+                const playlistRefToDelete = ref(db, `artifacts/${appId}/users/${userId}/playlists/${playlistIdToDelete}`);
+                await remove(playlistRefToDelete);
+                console.log(`Playlist "${playlistName}" deleted successfully!`);
+
+                // If the deleted playlist was the currently selected one, clear the player's playlist
+                if (selectedFirebasePlaylistId === playlistIdToDelete) {
+                    setSelectedFirebasePlaylistId(null);
+                    setPlaylist(defaultAvailableSongs); // Revert to showing available songs
+                    setOriginalPlaylist(defaultAvailableSongs);
+                    setSelectedFirebasePlaylistSongs([]);
+                    setCurrentSongIndex(0);
+                    setIsPlaying(false);
+                }
+            } catch (error) {
+                console.error("Error deleting playlist:", error);
+            }
+        } else {
+            console.log("Playlist deletion cancelled.");
+        }
+    }, [db, userId, appId, selectedFirebasePlaylistId]);
+
+    // --- Add Songs to Playlist Modal Logic (for multi-select from selected playlist) ---
+    const handleOpenAddSongsToPlaylistModal = useCallback(() => {
+        if (!selectedFirebasePlaylistId) {
+            // This alert should ideally not be hit if the button is only shown when a playlist is selected
+            alert("Please select a playlist first to add songs.");
+            return;
+        }
+        setShowAddSongsToPlaylistModal(true);
+    }, [selectedFirebasePlaylistId]);
+
+    const handleAddSelectedSongsToPlaylist = useCallback(async (songsToAdd) => {
+        if (!db || !userId || !selectedFirebasePlaylistId) {
+            console.error("Cannot add songs: Firebase not ready, user not authenticated, or no playlist selected.");
+            return;
+        }
+
+        try {
+            const playlistRef = ref(db, `artifacts/${appId}/users/${userId}/playlists/${selectedFirebasePlaylistId}`);
+            const snapshot = await get(playlistRef);
+            const currentPlaylistData = snapshot.val();
+            const currentSongs = currentPlaylistData && currentPlaylistData.songs ? currentPlaylistData.songs : [];
+
+            const newSongs = songsToAdd.filter(songToAdd =>
+                !currentSongs.some(existingSong => existingSong.id === songToAdd.id)
+            );
+
+            if (newSongs.length === 0) {
+                console.warn("No new songs to add or all selected songs are already in the playlist.");
+                return;
+            }
+
+            const updatedSongs = [...currentSongs, ...newSongs];
+            await update(playlistRef, { songs: updatedSongs });
+            console.log(`Added ${newSongs.length} song(s) to playlist ID: ${selectedFirebasePlaylistId}.`);
+
+            // Explicitly update local state after Firebase write
+            setPlaylist(updatedSongs);
+            setOriginalPlaylist(updatedSongs);
+            setSelectedFirebasePlaylistSongs(updatedSongs);
+
+        } catch (error) {
+            console.error("Error adding songs to playlist:", error);
+        }
+    }, [db, userId, appId, selectedFirebasePlaylistId]);
+
+    // --- Add Single Song to Playlist Modal Logic (from Available Songs section) ---
+    const handleOpenSelectPlaylistForSongModal = useCallback((song) => {
+        setSongToAddToSpecificPlaylist(song);
+        setShowSelectPlaylistForSongModal(true);
+    }, []);
+
+    const handleAddSingleSongToPlaylist = useCallback(async (playlistId, songToAdd) => {
+        if (!db || !userId) {
+            console.error("Firebase not ready or user not authenticated.");
+            return;
+        }
+
+        try {
+            const playlistRef = ref(db, `artifacts/${appId}/users/${userId}/playlists/${playlistId}`);
+            const snapshot = await get(playlistRef);
+            const currentPlaylistData = snapshot.val();
+            const currentSongs = currentPlaylistData && currentPlaylistData.songs ? currentPlaylistData.songs : [];
+
+            // Prevent adding duplicate songs to the playlist
+            const isDuplicate = currentSongs.some(song => song.id === songToAdd.id);
+            if (isDuplicate) {
+                console.warn(`Song "${songToAdd.title}" is already in playlist ID: ${playlistId}.`);
+                setShowSelectPlaylistForSongModal(false); // Close modal even if duplicate
+                return;
+            }
+
+            const updatedSongs = [...currentSongs, songToAdd];
+            await update(playlistRef, { songs: updatedSongs });
+            console.log(`Song "${songToAdd.title}" added to playlist ID: ${playlistId}.`);
+
+            // If the currently active playlist is the one we just updated, refresh it
+            if (selectedFirebasePlaylistId === playlistId) {
+                setPlaylist(updatedSongs);
+                setOriginalPlaylist(updatedSongs);
+                setSelectedFirebasePlaylistSongs(updatedSongs);
+            }
+            setShowSelectPlaylistForSongModal(false); // Close modal after adding
+        } catch (error) {
+            console.error("Error adding single song to playlist:", error);
+        }
+    }, [db, userId, appId, selectedFirebasePlaylistId]);
+
+
+    // --- Utility Functions ---
+    const formatTime = (time) => {
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60);
+        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    };
+
+    const handleTimeUpdate = () => {
+        if (audioRef.current) setCurrentTime(audioRef.current.currentTime);
+    };
+
+    const handleLoadedMetadata = () => {
+        if (audioRef.current) setDuration(audioRef.current.duration);
+    };
+
+    const handleSeek = (e) => {
+        if (audioRef.current) audioRef.current.currentTime = e.target.value;
+    };
+
+    const handleVolumeChange = (e) => {
+        setVolume(parseFloat(e.target.value));
+    };
+
+    const toggleMute = () => {
+        if (volume > 0) {
+            setPrevVolume(volume);
+            setVolume(0);
+        } else {
+            setVolume(prevVolume);
+        }
+    };
+
+    // Filtered list for the main display based on search term
+    const filteredMainSongs = playlist.filter(song =>
+        song.title.toLowerCase().includes(mainSearchTerm.toLowerCase()) ||
+        song.artist.toLowerCase().includes(mainSearchTerm.toLowerCase())
+    );
+
+    // --- Function to go back to Available Songs ---
+    const handleBackToAvailableSongs = useCallback(() => {
+        setSelectedFirebasePlaylistId(null); // Deselect any playlist
+        setPlaylist(defaultAvailableSongs); // Set main playlist to all available songs
+        setOriginalPlaylist(defaultAvailableSongs);
+        setSelectedFirebasePlaylistSongs([]); // Clear selected playlist songs state
+        setCurrentSongIndex(0);
+        setIsPlaying(false);
+        setMainSearchTerm(''); // Clear search term
+    }, []);
+
+
+    // --- Conditional Rendering for Login/App ---
+    if (isLoadingAuth) {
+        return (
+            <div className="min-h-screen bg-black text-white flex items-center justify-center">
+                <p className="text-xl">Made with love, I love you so much, my love!</p>
+            </div>
+        );
+    }
+
+    if (!userId) {
+        return (
+            <div className="min-h-screen bg-black text-white flex items-center justify-center">
+                <div className="bg-zinc-900 p-8 rounded-lg shadow-xl w-96">
+                    <h2 className="text-3xl font-bold mb-6 text-white text-center"></h2>
+                    <form onSubmit={handleLogin} className="space-y-4">
+                        <div>
+                            <label htmlFor="email" className="block text-gray-400 text-sm font-bold mb-2">
+                                Email:
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="shadow appearance-none border border-zinc-700 rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-zinc-800"
+                                placeholder=""
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="password" className="block text-gray-400 text-sm font-bold mb-2">
+                                Password:
+                            </label>
+                            <input
+                                type="password"
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="shadow appearance-none border border-zinc-700 rounded w-full py-2 px-3 text-white mb-3 leading-tight focus:outline-none focus:shadow-outline bg-zinc-800"
+                                placeholder=""
+                                required
+                            />
+                        </div>
+                        {loginError && <p className="text-red-500 text-sm text-center">{loginError}</p>}
+                        <button
+                            type="submit"
+                            className="w-full bg-green-500 text-black font-bold py-2 px-4 rounded-full hover:bg-green-400 transition-colors duration-300 focus:outline-none focus:shadow-outline"
+                        >
+                            Log In
+                        </button>
+                    </form>
+                </div>
+            </div>
+        );
+    }
+
+
+    return (
+        <div className="min-h-screen bg-black text-white font-inter flex overflow-hidden"> {/* Added overflow-hidden */}
+            {/* Left Sidebar for Playlists */}
+            <aside className="w-64 bg-zinc-900 p-4 border-r border-zinc-800 flex flex-col h-screen"> {/* Added h-screen */}
+                <h2 className="text-2xl font-bold mb-6 text-white">Defnotgg</h2>
+                <button
+                    onClick={handleCreatePlaylist}
+                    className="flex items-center justify-center px-4 py-2 mb-4 bg-green-500 text-black font-bold rounded-full hover:bg-green-400 transition-all duration-300 text-base"
+                    title="Create a new empty playlist"
+                >
+                    <Plus size={20} className="mr-2" /> Create Playlist
+                </button>
+                <ul className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-2 min-h-0"> {/* Added min-h-0 */}
+                    {userPlaylists.length === 0 ? (
+                        <p className="text-gray-400 text-sm">No saved playlists. Create one!</p>
+                    ) : (
+                        userPlaylists.map(pl => (
+                            <li
+                                key={pl.id}
+                                className={`flex items-center justify-between p-3 rounded-md cursor-pointer transition-all duration-200 ${
+                                    selectedFirebasePlaylistId === pl.id
+                                        ? 'bg-zinc-700 text-white'
+                                        : 'bg-zinc-800 text-gray-300 hover:bg-zinc-700'
+                                }`}
+                            >
+                                <span onClick={() => selectFirebasePlaylist(pl.id)} className="flex-1 truncate pr-2">
+                                    {pl.name}
+                                </span>
+                                <button
+                                    onClick={() => handleDeletePlaylist(pl.id, pl.name)}
+                                    className="p-1 rounded-full bg-red-600 text-white hover:bg-red-500 transition-colors duration-200"
+                                    title={`Delete playlist "${pl.name}"`}
+                                >
+                                    <X size={16} />
+                                </button>
+                            </li>
+                        ))
+                    )}
+                </ul>
+                <div className="mt-auto pt-4 border-t border-zinc-800 text-gray-500 text-xs flex items-center justify-between flex-shrink-0"> {/* Added flex-shrink-0 */}
+                    
+                    <button
+                        onClick={handleLogout}
+                        className="p-2 rounded-full bg-zinc-700 text-gray-300 hover:bg-zinc-600 transition-colors duration-200"
+                        title="Logout"
+                    >
+                        <LogOut size={16} />
+                    </button>
+                </div>
+            </aside>
+
+            {/* Main Content Area */}
+            <main className="flex-1 p-4 sm:p-8 flex flex-col items-center justify-start h-screen">
+                <div className="w-full max-w-4xl bg-zinc-900 rounded-lg shadow-2xl p-6 sm:p-8 flex flex-col h-full min-h-0 space-y-4"> {/* Added space-y-4 here */}
+
+                    {/* Header */}
+                    <header className="flex flex-col sm:flex-row items-center justify-between flex-shrink-0"> {/* Removed mb-2 */}
+                        <h1 className="text-4xl sm:text-5xl font-extrabold text-white flex-1"> {/* Added flex-1 */}
+                            Bamtify
+                        </h1>
+                        {selectedFirebasePlaylistId && ( // Show back button only when a playlist is selected
+                            <button
+                                onClick={handleBackToAvailableSongs}
+                                className="flex items-center px-4 py-2 bg-zinc-700 text-gray-300 font-bold rounded-full hover:bg-zinc-600 transition-colors duration-300 text-base ml-4" // Added ml-4 for spacing
+                                title="Back to Available Songs"
+                            >
+                                <ArrowLeft size={20} className="mr-2" /> Back
+                            </button>
+                        )}
+                    </header>
+
+                    {/* Current Song Display */}
+                    <div className="flex flex-col items-center text-center bg-zinc-800 rounded-lg p-4 shadow-inner flex-shrink-0"> {/* Removed mb-4 */}
+                        <Music size={60} className="text-gray-400 mb-2" />
+                        <h2 className="text-2xl font-bold mb-1 text-white">{currentSong ? currentSong.title : 'No song selected'}</h2>
+                        <p className="text-lg text-gray-400">{currentSong ? currentSong.artist : ''}</p>
+                    </div>
+
+                    {/* Audio Element (Hidden) */}
+                    <audio
+                        ref={audioRef}
+                        src={currentSong ? currentSong.src : ''}
+                        onEnded={handleSongEnded}
+                        onTimeUpdate={handleTimeUpdate}
+                        onLoadedMetadata={handleLoadedMetadata}
+                        preload="auto"
+                    ></audio>
+
+                    {/* Player Controls */}
+                    <div className="bg-zinc-800 rounded-lg p-4 shadow-inner flex flex-col items-center flex-shrink-0"> {/* Removed mb-4 */}
+                        {/* Progress Bar */}
+                        <div className="w-full flex items-center mb-2">
+                            <span className="text-sm text-gray-400 mr-2">{formatTime(currentTime)}</span>
+                            <input
+                                type="range"
+                                min="0"
+                                max={duration || 0}
+                                value={currentTime}
+                                onChange={handleSeek}
+                                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-green-500"
+                            />
+                            <span className="text-sm text-gray-400 ml-2">{formatTime(duration)}</span>
+                        </div>
+
+                        {/* Control Buttons */}
+                        <div className="flex items-center justify-center space-x-3 mb-2">
+                            <button
+                                onClick={handleShuffle}
+                                className={`p-2 rounded-full transition-all duration-300 ${isShuffling ? 'text-green-500' : 'text-gray-400 hover:text-white'}`}
+                                title="Shuffle"
+                            >
+                                <Shuffle size={20} />
+                            </button>
+                            <button
+                                onClick={handlePrev}
+                                className="p-2 rounded-full text-gray-400 hover:text-white transition-all duration-300"
+                                title="Previous"
+                            >
+                                <SkipBack size={20} />
+                            </button>
+                            <button
+                                onClick={handlePlayPause}
+                                className="p-3 rounded-full bg-green-500 text-black shadow-xl hover:scale-105 transition-all duration-300"
+                                title={isPlaying ? "Pause" : "Play"}
+                            >
+                                {isPlaying ? <Pause size={28} /> : <Play size={28} />}
+                            </button>
+                            <button
+                                onClick={handleNext}
+                                className="p-2 rounded-full text-gray-400 hover:text-white transition-all duration-300"
+                                title="Next"
+                            >
+                                <SkipForward size={20} />
+                            </button>
+                            <button
+                                onClick={handleRepeat}
+                                className={`p-2 rounded-full transition-all duration-300 ${repeatMode !== 'off' ? 'text-green-500' : 'text-gray-400 hover:text-white'}`}
+                                title={`Repeat: ${repeatMode}`}
+                            >
+                                <Repeat size={20} />
+                                {repeatMode === 'one' && <span className="absolute -bottom-1 -right-1 text-xs font-bold">1</span>}
+                            </button>
+                        </div>
+
+                        {/* Volume Control */}
+                        <div className="flex items-center w-full max-w-xs mt-2">
+                            <button onClick={toggleMute} className="p-1 text-gray-400 hover:text-white transition-colors duration-200" title={volume === 0 ? "Unmute" : "Mute"}>
+                                {volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                            </button>
+                            <input
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.01"
+                                value={volume}
+                                onChange={handleVolumeChange}
+                                className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-green-500 mx-2"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Available Songs / Current Playlist Display */}
+                    <div className="bg-zinc-800 rounded-lg p-6 shadow-inner flex-1 flex flex-col min-h-0"> {/* Added min-h-0 */}
+                        <div className="flex items-center justify-between mb-4 flex-shrink-0">
+                            <h3 className="text-2xl font-bold text-white">
+                                {selectedFirebasePlaylistId ? 'Songs in Selected Playlist' : 'Available Songs'}
+                            </h3>
+                            {selectedFirebasePlaylistId && (
+                                <button
+                                    onClick={handleOpenAddSongsToPlaylistModal}
+                                    className="flex items-center px-4 py-2 bg-green-500 text-black font-bold rounded-full hover:bg-green-400 transition-colors duration-300 text-base"
+                                    title="Add songs to this playlist"
+                                >
+                                    <Plus size={20} className="mr-2" /> Add Songs
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Search bar for the main song list */}
+                        <div className="relative mb-4 flex-shrink-0">
+                          
+                            <input
+                                type="text"
+                                placeholder="search"
+                                className="w-full pl-4 pr-4 py-2 rounded-md bg-zinc-700 text-white border border-zinc-600 focus:outline-none focus:border-green-500"
+                                value={mainSearchTerm}
+                                onChange={(e) => setMainSearchTerm(e.target.value)}
+                            />
+                        </div>
+
+                        {filteredMainSongs.length === 0 ? (
+                            <p className="text-gray-400 text-center flex-1 flex items-center justify-center">
+                                {selectedFirebasePlaylistId ? 'This playlist is empty. Add some songs!' : 'No songs available.'}
+                            </p>
+                        ) : (
+                            <ul className="space-y-3 overflow-y-auto custom-scrollbar pr-2 flex-1 min-h-0"> {/* Added min-h-0 */}
+                                {filteredMainSongs.map((song, index) => (
+                                    <li
+                                        key={song.id}
+                                        className={`flex items-center justify-between p-4 rounded-md transition-all duration-200 ${
+                                            currentSong && currentSong.id === song.id
+                                                ? 'bg-zinc-700 text-white'
+                                                : 'bg-zinc-900 text-gray-300 hover:bg-zinc-700'
+                                        }`}
+                                    >
+                                        <div className="flex-1 truncate" onClick={() => playSong(playlist.findIndex(s => s.id === song.id))}>
+                                            <p className="font-semibold text-lg">{song.title}</p>
+                                            <p className="text-sm text-gray-400">{song.artist}</p>
+                                        </div>
+                                        <div className="flex items-center space-x-3">
+                                            {currentSong && currentSong.id === song.id && isPlaying && (
+                                                <div className="w-4 h-4 rounded-full bg-green-500 animate-pulse-slow"></div>
+                                            )}
+                                            {selectedFirebasePlaylistId ? (
+                                                <button
+                                                    onClick={() => handleDeleteSongFromPlaylist(song.id)}
+                                                    className="p-2 rounded-full bg-red-600 text-white hover:bg-red-500 transition-colors duration-200"
+                                                    title="Remove from playlist"
+                                                >
+                                                    <X size={16} />
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={() => handleOpenSelectPlaylistForSongModal(song)} // Changed to new modal trigger
+                                                    className="p-2 rounded-full bg-green-600 text-white hover:bg-green-500 transition-colors duration-200"
+                                                    title="Add to playlist"
+                                                >
+                                                    <Plus size={16} />
+                                                </button>
+                                            )}
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+                </div>
+            </main>
+
+            {/* AddSongsToPlaylistModal (for multi-select to specific playlist) */}
+            <AddSongsToPlaylistModal
+                show={showAddSongsToPlaylistModal}
+                onClose={() => setShowAddSongsToPlaylistModal(false)}
+                availableSongs={defaultAvailableSongs}
+                currentSongsInPlaylist={selectedFirebasePlaylistSongs}
+                onAddSongs={handleAddSelectedSongsToPlaylist}
+            />
+
+            {/* SelectPlaylistForSongModal (for adding a single song from available songs) */}
+            <SelectPlaylistForSongModal
+                show={showSelectPlaylistForSongModal}
+                onClose={() => setShowSelectPlaylistForSongModal(false)}
+                playlists={userPlaylists}
+                songToAdd={songToAddToSpecificPlaylist}
+                onAddSingleSongToPlaylist={handleAddSingleSongToPlaylist}
+            />
+        </div>
+    );
+};
+
+export default App;
