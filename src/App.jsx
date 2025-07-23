@@ -24,11 +24,22 @@ const firebaseConfig = {
 // Use the appId from the provided firebaseConfig
 const appId = firebaseConfig.appId;
 
-// Initial placeholder songs (these are the "master" list of available songs)
+// Base URL for your Supabase storage or local public folder for songs
 const supabaseBase = "https://khaoplokzfvxueaqgixx.supabase.co/storage/v1/object/public/data/";
 
+// Array of video sources for background (place your videos in public/videos/)
+const defaultVideoSources = [
+  "/videos/bam.mp4", // Example: Replace with your video paths
+  "/videos/diden.mp4",
+  "/videos/okay.mp4",
+  "/videos/reto.mp4",
+  "/videos/tv.mp4",
+  // Add more video paths as needed
+];
+
+// Initial placeholder songs (these are the "master" list of available songs)
 const defaultAvailableSongsRaw = [
-  { id: 'placeholder-1', title: 'Hold Me Down', artist: 'Daniel Caesar', filename: 'Hold Me Down.mp3' },
+   { id: 'placeholder-1', title: 'Hold Me Down', artist: 'Daniel Caesar', filename: 'Hold Me Down.mp3' },
   { id: 'placeholder-2', title: 'Nikes', artist: 'Frank Ocean', filename: 'Nikes.mp3' },
   { id: 'placeholder-3', title: 'Ivy', artist: 'Frank Ocean', filename: 'Ivy.mp3' },
   { id: 'placeholder-4', title: 'Pink + White', artist: 'Frank Ocean', filename: 'pinkandwhite.mp3' },
@@ -139,12 +150,45 @@ const defaultAvailableSongsRaw = [
   { id: 'placeholder-109', title: 'Ready to Run', artist: 'One Direction', filename: 'One Direction - Ready to Run.mp3' },
   { id: 'placeholder-110', title: 'The Only Exception', artist: 'Paramore', filename: 'Paramore - The Only Exception.mp3' },
   { id: 'placeholder-111', title: 'APT', artist: 'Rose', filename: 'Rose - APT.mp3' },
-  { id: 'placeholder-112', title: 'Look After You', artist: 'The Fray', filename: 'The Fray - Look After You.mp3' }
+  { id: 'placeholder-112', title: 'Look After You', artist: 'The Fray', filename: 'The Fray - Look After You.mp3' },
+  { id: 'placeholder-113', title: 'A Thousand Miles', artist: 'Vanessa Carlton', filename: 'Vanessa Carlton - A Thousand Miles.mp3' },
+  { id: 'placeholder-114', title: 'Hulaan', artist: 'Janine', filename: 'Janine - Hulaan.mp3' },
+  { id: 'placeholder-115', title: 'YOUTH', artist: 'Troye Sivan', filename: 'Troye Sivan - YOUTH.mp3' },
+  { id: 'placeholder-116', title: 'Angels Brought Me Here', artist: 'Guy Sebastian', filename: 'Guy Sebastian - Angels Brought Me Here.mp3' },
+  { id: 'placeholder-117', title: 'Not Like Us', artist: 'Kendrick Lamar', filename: 'Kendrick Lamar - Not Like Us.mp3' },
+  { id: 'placeholder-118', title: 'intro (end of the world)', artist: 'Ariana Grande', filename: 'Ariana Grande - intro (end of the world).mp3' },
+  { id: 'placeholder-119', title: 'Pick Up', artist: 'Illest Morena', filename: 'Illest Morena - Pick Up.mp3' },
+  { id: 'placeholder-120', title: 'Faded (Raw)', artist: 'Illest Morena', filename: 'Illest Morena - Faded (Raw).mp3' },
+  { id: 'placeholder-121', title: 'Midnight Sky', artist: 'Unique Salonga', filename: 'Unique Salonga - Midnight Sky.mp3' },
+  { id: 'placeholder-122', title: 'Lagi', artist: 'BINI', filename: 'BINI - Lagi.mp3' },
+  { id: 'placeholder-123', title: 'The Archer', artist: 'Taylor Swift', filename: 'Taylor Swift - The Archer.mp3' },
+  { id: 'placeholder-124', title: 'Good Days', artist: 'SZA', filename: 'SZA - Good Days.mp3' },
+  { id: 'placeholder-125', title: 'Happy Now', artist: 'Kali Uchis', filename: 'Kali Uchis - Happy Now.mp3' },
+  { id: 'placeholder-126', title: 'telepatía', artist: 'Kali Uchis', filename: 'Kali Uchis - telepatia.mp3' },
+  { id: 'placeholder-127', title: 'Moonlight', artist: 'Kali Uchis', filename: 'Kali Uchis - Moonlight.mp3' },
+  { id: 'placeholder-128', title: 'Alipin', artist: 'Shamrock', filename: 'Shamrock - Alipin.mp3' },
+  { id: 'placeholder-129', title: 'the perfect pair', artist: 'beabadoobee', filename: 'beabadoobee - the perfect pair.mp3' },
+  { id: 'placeholder-130', title: 'sol at luna', artist: 'geiko', filename: 'geiko - sol at luna.mp3' },
+  { id: 'placeholder-131', title: 'All I Want', artist: 'Kodaline', filename: 'Kodaline - All I Want.mp3' },
+  { id: 'placeholder-132', title: 'Tenerife Sea', artist: 'Ed Sheeran', filename: 'Ed Sheeran - Tenerife Sea.mp3' },
+  { id: 'placeholder-133', title: 'Best Part (feat. H.E.R.)', artist: 'Daniel Caesar', filename: 'Daniel Caesar - Best Part (feat. H.E.R.).mp3' },
+  { id: 'placeholder-134', title: 'NVMD', artist: 'Denise Julia', filename: 'Denise Julia - NVMD.mp3' },
+  { id: 'placeholder-135', title: 'Babaero', artist: 'Hev Abi', filename: 'Hev Abi - Babaero.mp3' },
+  { id: 'placeholder-136', title: 'Wish You Were Here', artist: 'Neck Deep', filename: 'Neck Deep - Wish You Were Here.mp3' },
+  { id: 'placeholder-137', title: 'On The Ground', artist: 'ROSE', filename: 'ROSE - On The Ground.mp3' },
+  { id: 'placeholder-138', title: 'Untitled', artist: 'Rex Orange County', filename: 'Rex Orange County - Untitled.mp3' },
+  { id: 'placeholder-139', title: 'Pyramids', artist: 'Frank Ocean', filename: 'Frank Ocean - Pyramids.mp3' },
+  { id: 'placeholder-140', title: 'Maybe This Time', artist: 'Sarah Geronimo', filename: 'Sarah Geronimo - Maybe This Time.mp3' },
+  { id: 'placeholder-141', title: 'Starting over Again', artist: 'Toni Gonzaga', filename: 'Toni Gonzaga - Starting over Again.mp3' },
+  { id: 'placeholder-142', title: 'Nobody Knows', artist: 'KISS OF LIFE', filename: 'KISS OF LIFE - Nobody Knows.mp3' },
+  { id: 'placeholder-143', title: 'Sometimes', artist: 'Britney Spears', filename: 'Britney Spears - Sometimes.mp3' },
+  { id: 'placeholder-144', title: 'Chasing Pavements', artist: 'Adele', filename: 'Adele - Chasing Pavements.mp3' },
 ];
 
 const defaultAvailableSongs = defaultAvailableSongsRaw.map(song => ({
   ...song,
-  src: encodeURI(supabaseBase + song.filename)
+  src: encodeURI(supabaseBase + song.filename), // Ensure filename is URL-encoded
+  // videoSrc is no longer per-song, it's a global rotating background
 }));
 
 // AddSongsToPlaylistModal Component (for adding multiple songs from available to a selected playlist)
@@ -188,12 +232,12 @@ const AddSongsToPlaylistModal = ({ show, onClose, availableSongs, currentSongsIn
     return (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
             <div className="bg-zinc-800 p-6 rounded-lg shadow-xl w-[500px] max-h-[80vh] flex flex-col">
-                <h3 className="text-xl font-bold mb-4 text-white"></h3>
+                <h3 className="text-xl font-bold mb-4 text-white">Add Songs to Playlist</h3>
                 <div className="relative mb-4">
-                  
+            
                     <input
                         type="text"
-                        placeholder="search"
+                        placeholder="Search"
                         className="w-full pl-4 pr-4 py-2 rounded-md bg-zinc-700 text-white border border-zinc-600 focus:outline-none focus:border-green-500"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -260,7 +304,7 @@ const SelectPlaylistForSongModal = ({ show, onClose, playlists, songToAdd, onAdd
                 <h3 className="text-xl font-bold mb-4 text-white">Add "{songToAdd?.title}" to...</h3>
                 <ul className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-2 mb-4">
                     {playlists.length === 0 ? (
-                        <p className="text-gray-400 text-sm text-center"></p>
+                        <p className="text-gray-400 text-sm text-center">No playlists available. Create one first!</p>
                     ) : (
                         playlists.map(pl => (
                             <li
@@ -312,6 +356,10 @@ const App = () => {
     const [volume, setVolume] = useState(0.7);
     const [prevVolume, setPrevVolume] = useState(0.7);
     const audioRef = useRef(null);
+    const videoRef = useRef(null); // Ref for the video element
+
+    // Video background state
+    const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
     // Firebase Playlist states
     const [userPlaylists, setUserPlaylists] = useState([]); // List of playlists fetched from Firebase
@@ -479,6 +527,34 @@ const App = () => {
             }
         }
     }, [isPlaying, currentSongIndex, playlist]); // Re-run when song changes or playlist updates
+
+    // Effect to control video background rotation
+    useEffect(() => {
+        if (defaultVideoSources.length > 0) {
+            const interval = setInterval(() => {
+                setCurrentVideoIndex(prevIndex =>
+                    (prevIndex + 1) % defaultVideoSources.length
+                );
+            }, 15000); // Change video every 15 seconds
+
+            return () => clearInterval(interval); // Cleanup interval on component unmount
+        }
+    }, [defaultVideoSources.length]);
+
+    // Effect to update video source when index changes
+    useEffect(() => {
+        if (videoRef.current && defaultVideoSources.length > 0) {
+            videoRef.current.src = defaultVideoSources[currentVideoIndex];
+            videoRef.current.load(); // Explicitly load the new video source
+            // Only play if audio is also playing, otherwise keep it paused/reset
+            if (isPlaying) {
+                videoRef.current.play().catch(e => console.error("Error playing video:", e));
+            } else {
+                videoRef.current.pause();
+                videoRef.current.currentTime = 0; // Reset video when paused
+            }
+        }
+    }, [currentVideoIndex, isPlaying, defaultVideoSources]); // Depend on currentVideoIndex, isPlaying, and defaultVideoSources
 
     useEffect(() => {
         if (audioRef.current) {
@@ -887,8 +963,8 @@ const App = () => {
     return (
         <div className="min-h-screen bg-black text-white font-inter flex overflow-hidden"> {/* Added overflow-hidden */}
             {/* Left Sidebar for Playlists */}
-            <aside className="w-64 bg-zinc-900 p-4 border-r border-zinc-800 flex flex-col h-screen"> {/* Added h-screen */}
-                <h2 className="text-2xl font-bold mb-6 text-white">Defnotgg</h2>
+            <aside className="w-64 bg-zinc-900 p-4 border-r border-zinc-800 flex flex-col h-screen overflow-hidden"> {/* Added h-screen, overflow-hidden */}
+                <h2 className="text-2xl font-bold mb-6 text-white">Deftnotgg</h2>
                 <button
                     onClick={handleCreatePlaylist}
                     className="flex items-center justify-center px-4 py-2 mb-4 bg-green-500 text-black font-bold rounded-full hover:bg-green-400 transition-all duration-300 text-base"
@@ -924,7 +1000,7 @@ const App = () => {
                     )}
                 </ul>
                 <div className="mt-auto pt-4 border-t border-zinc-800 text-gray-500 text-xs flex items-center justify-between flex-shrink-0"> {/* Added flex-shrink-0 */}
-                    
+                  
                     <button
                         onClick={handleLogout}
                         className="p-2 rounded-full bg-zinc-700 text-gray-300 hover:bg-zinc-600 transition-colors duration-200"
@@ -936,18 +1012,97 @@ const App = () => {
             </aside>
 
             {/* Main Content Area */}
-            <main className="flex-1 p-4 sm:p-8 flex flex-col items-center justify-start h-screen">
-                <div className="w-full max-w-4xl bg-zinc-900 rounded-lg shadow-2xl p-6 sm:p-8 flex flex-col h-full min-h-0 space-y-4"> {/* Added space-y-4 here */}
+            <main className="flex-1 p-4 sm:p-8 flex flex-col md:flex-row h-screen min-h-0"> {/* Changed to flex-row on md screens */}
 
-                    {/* Header */}
-                    <header className="flex flex-col sm:flex-row items-center justify-between flex-shrink-0"> {/* Removed mb-2 */}
-                        <h1 className="text-4xl sm:text-5xl font-extrabold text-white flex-1"> {/* Added flex-1 */}
+                {/* Middle Section (Available Songs / Current Playlist) */}
+                <div className="w-full md:w-1/2 flex flex-col h-full min-h-0 md:pr-4"> {/* md:w-1/2, md:pr-4 for spacing */}
+                    <div className="bg-zinc-800 rounded-lg p-6 shadow-inner flex-1 flex flex-col min-h-0">
+                        <div className="flex items-center justify-between mb-4 flex-shrink-0">
+                            <h3 className="text-2xl font-bold text-white">
+                                {selectedFirebasePlaylistId ? 'Songs in Selected Playlist' : 'Available Songs'}
+                            </h3>
+                            {selectedFirebasePlaylistId && (
+                                <button
+                                    onClick={handleOpenAddSongsToPlaylistModal}
+                                    className="flex items-center px-4 py-2 bg-green-500 text-black font-bold rounded-full hover:bg-green-400 transition-colors duration-300 text-base"
+                                    title="Add songs to this playlist"
+                                >
+                                    <Plus size={20} className="mr-2" /> Add Songs
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Search bar for the main song list */}
+                        <div className="relative mb-4 flex-shrink-0">
+                    
+                            <input
+                                type="text"
+                                placeholder="Search"
+                                className="w-full pl-4 pr-4 py-2 rounded-md bg-zinc-700 text-white border border-zinc-600 focus:outline-none focus:border-green-500"
+                                value={mainSearchTerm}
+                                onChange={(e) => setMainSearchTerm(e.target.value)}
+                            />
+                        </div>
+
+                        {filteredMainSongs.length === 0 ? (
+                            <p className="text-gray-400 text-center flex-1 flex items-center justify-center">
+                                {selectedFirebasePlaylistId ? 'empty' : 'No songs available.'}
+                            </p>
+                        ) : (
+                            <ul className="space-y-3 overflow-y-auto custom-scrollbar pr-2 flex-1 min-h-0">
+                                {filteredMainSongs.map((song, index) => (
+                                    <li
+                                        key={song.id}
+                                        className={`flex items-center justify-between p-4 rounded-md transition-all duration-200 ${
+                                            currentSong && currentSong.id === song.id
+                                                ? 'bg-zinc-700 text-white'
+                                                : 'bg-zinc-900 text-gray-300 hover:bg-zinc-700'
+                                        }`}
+                                    >
+                                        <div className="flex-1 truncate" onClick={() => playSong(playlist.findIndex(s => s.id === song.id))}>
+                                            <p className="font-semibold text-lg">{song.title}</p>
+                                            <p className="text-sm text-gray-400">{song.artist}</p>
+                                        </div>
+                                        <div className="flex items-center space-x-3">
+                                            {currentSong && currentSong.id === song.id && isPlaying && (
+                                                <div className="w-4 h-4 rounded-full bg-green-500 animate-pulse-slow"></div>
+                                            )}
+                                            {selectedFirebasePlaylistId ? (
+                                                <button
+                                                    onClick={() => handleDeleteSongFromPlaylist(song.id)}
+                                                    className="p-2 rounded-full bg-red-600 text-white hover:bg-red-500 transition-colors duration-200"
+                                                    title="Remove from playlist"
+                                                >
+                                                    <X size={16} />
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={() => handleOpenSelectPlaylistForSongModal(song)} // Changed to new modal trigger
+                                                    className="p-2 rounded-full bg-green-600 text-white hover:bg-green-500 transition-colors duration-200"
+                                                    title="Add to playlist"
+                                                >
+                                                    <Plus size={16} />
+                                                </button>
+                                            )}
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+                </div>
+
+                {/* Right Section (Player and Current Song Display) */}
+                <div className="w-full md:w-1/2 flex flex-col h-full min-h-0 md:pl-4 mt-4 md:mt-0"> {/* md:w-1/2, md:pl-4, mt-4/md:mt-0 for responsiveness */}
+                    {/* Header (Bamtify title and Back button) */}
+                    <header className="flex flex-col sm:flex-row items-center justify-between flex-shrink-0 mb-4">
+                        <h1 className="text-4xl sm:text-5xl font-extrabold text-white flex-1">
                             Bamtify
                         </h1>
                         {selectedFirebasePlaylistId && ( // Show back button only when a playlist is selected
                             <button
                                 onClick={handleBackToAvailableSongs}
-                                className="flex items-center px-4 py-2 bg-zinc-700 text-gray-300 font-bold rounded-full hover:bg-zinc-600 transition-colors duration-300 text-base ml-4" // Added ml-4 for spacing
+                                className="flex items-center px-4 py-2 bg-zinc-700 text-gray-300 font-bold rounded-full hover:bg-zinc-600 transition-colors duration-300 text-base ml-4"
                                 title="Back to Available Songs"
                             >
                                 <ArrowLeft size={20} className="mr-2" /> Back
@@ -955,11 +1110,28 @@ const App = () => {
                         )}
                     </header>
 
-                    {/* Current Song Display */}
-                    <div className="flex flex-col items-center text-center bg-zinc-800 rounded-lg p-4 shadow-inner flex-shrink-0"> {/* Removed mb-4 */}
-                        <Music size={60} className="text-gray-400 mb-2" />
-                        <h2 className="text-2xl font-bold mb-1 text-white">{currentSong ? currentSong.title : 'No song selected'}</h2>
-                        <p className="text-lg text-gray-400">{currentSong ? currentSong.artist : ''}</p>
+                    {/* Current Song Display & Video Thumbnail */}
+                    <div className="relative bg-zinc-800 rounded-lg p-4 shadow-inner flex-shrink-0 mb-4 overflow-hidden" style={{ paddingTop: '56.25%' }}> {/* 16:9 aspect ratio */}
+                        {defaultVideoSources.length > 0 && (
+                            <video
+                                ref={videoRef}
+                                src={defaultVideoSources[currentVideoIndex]}
+                                className="absolute top-0 left-0 w-full h-full object-cover rounded-lg" // object-cover to fill container
+                                autoPlay
+                                loop
+                                muted
+                                playsInline // Important for mobile autoplay
+                                onError={(e) => console.error("Error loading video:", e)}
+                            >
+                                Your browser does not support the video tag.
+                            </video>
+                        )}
+                        {/* Overlay for song info and music icon */}
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-40 rounded-lg">
+                            <Music size={60} className="text-gray-400 mb-2" />
+                            <h2 className="text-2xl font-bold mb-1 text-white text-center px-2">{currentSong ? currentSong.title : 'No song selected'}</h2>
+                            <p className="text-lg text-gray-400 text-center px-2">{currentSong ? currentSong.artist : ''}</p>
+                        </div>
                     </div>
 
                     {/* Audio Element (Hidden) */}
@@ -973,7 +1145,7 @@ const App = () => {
                     ></audio>
 
                     {/* Player Controls */}
-                    <div className="bg-zinc-800 rounded-lg p-4 shadow-inner flex flex-col items-center flex-shrink-0"> {/* Removed mb-4 */}
+                    <div className="bg-zinc-800 rounded-lg p-4 shadow-inner flex flex-col items-center flex-shrink-0">
                         {/* Progress Bar */}
                         <div className="w-full flex items-center mb-2">
                             <span className="text-sm text-gray-400 mr-2">{formatTime(currentTime)}</span>
@@ -1043,82 +1215,6 @@ const App = () => {
                                 className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-green-500 mx-2"
                             />
                         </div>
-                    </div>
-
-                    {/* Available Songs / Current Playlist Display */}
-                    <div className="bg-zinc-800 rounded-lg p-6 shadow-inner flex-1 flex flex-col min-h-0"> {/* Added min-h-0 */}
-                        <div className="flex items-center justify-between mb-4 flex-shrink-0">
-                            <h3 className="text-2xl font-bold text-white">
-                                {selectedFirebasePlaylistId ? 'Songs in Selected Playlist' : 'Available Songs'}
-                            </h3>
-                            {selectedFirebasePlaylistId && (
-                                <button
-                                    onClick={handleOpenAddSongsToPlaylistModal}
-                                    className="flex items-center px-4 py-2 bg-green-500 text-black font-bold rounded-full hover:bg-green-400 transition-colors duration-300 text-base"
-                                    title="Add songs to this playlist"
-                                >
-                                    <Plus size={20} className="mr-2" /> Add Songs
-                                </button>
-                            )}
-                        </div>
-
-                        {/* Search bar for the main song list */}
-                        <div className="relative mb-4 flex-shrink-0">
-                          
-                            <input
-                                type="text"
-                                placeholder="search"
-                                className="w-full pl-4 pr-4 py-2 rounded-md bg-zinc-700 text-white border border-zinc-600 focus:outline-none focus:border-green-500"
-                                value={mainSearchTerm}
-                                onChange={(e) => setMainSearchTerm(e.target.value)}
-                            />
-                        </div>
-
-                        {filteredMainSongs.length === 0 ? (
-                            <p className="text-gray-400 text-center flex-1 flex items-center justify-center">
-                                {selectedFirebasePlaylistId ? 'empty' : 'No songs available.'}
-                            </p>
-                        ) : (
-                            <ul className="space-y-3 overflow-y-auto custom-scrollbar pr-2 flex-1 min-h-0"> {/* Added min-h-0 */}
-                                {filteredMainSongs.map((song, index) => (
-                                    <li
-                                        key={song.id}
-                                        className={`flex items-center justify-between p-4 rounded-md transition-all duration-200 ${
-                                            currentSong && currentSong.id === song.id
-                                                ? 'bg-zinc-700 text-white'
-                                                : 'bg-zinc-900 text-gray-300 hover:bg-zinc-700'
-                                        }`}
-                                    >
-                                        <div className="flex-1 truncate" onClick={() => playSong(playlist.findIndex(s => s.id === song.id))}>
-                                            <p className="font-semibold text-lg">{song.title}</p>
-                                            <p className="text-sm text-gray-400">{song.artist}</p>
-                                        </div>
-                                        <div className="flex items-center space-x-3">
-                                            {currentSong && currentSong.id === song.id && isPlaying && (
-                                                <div className="w-4 h-4 rounded-full bg-green-500 animate-pulse-slow"></div>
-                                            )}
-                                            {selectedFirebasePlaylistId ? (
-                                                <button
-                                                    onClick={() => handleDeleteSongFromPlaylist(song.id)}
-                                                    className="p-2 rounded-full bg-red-600 text-white hover:bg-red-500 transition-colors duration-200"
-                                                    title="Remove from playlist"
-                                                >
-                                                    <X size={16} />
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    onClick={() => handleOpenSelectPlaylistForSongModal(song)} // Changed to new modal trigger
-                                                    className="p-2 rounded-full bg-green-600 text-white hover:bg-green-500 transition-colors duration-200"
-                                                    title="Add to playlist"
-                                                >
-                                                    <Plus size={16} />
-                                                </button>
-                                            )}
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
                     </div>
                 </div>
             </main>
