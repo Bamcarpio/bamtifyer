@@ -1092,33 +1092,23 @@ const App = () => {
                     </div>
                 </div>
 
-                  {/* Right Section (Player and Current Song Display) */}
-                <div className="w-full md:w-1/2 flex flex-col h-full min-h-0 md:pl-4 mt-4 md:mt-0"> {/* md:w-1/2, md:pl-4, mt-4/md:mt-0 for responsiveness */}
-                    {/* Header (Bamtify title and Back button) */}
-                    <header className="flex flex-col sm:flex-row items-center justify-between flex-shrink-0 mb-4">
-                        {/* Animated Bamtify MP4 Banner */}
-                        <div className="relative w-full max-w-[200px] h-[50px] sm:max-w-[200px] sm:h-[110px] bg-black rounded-lg overflow-hidden flex items-center justify-center flex-1">
-                            <video
-                                src="/images/bamtify_banner.mp4" // Path to your MP4 banner
-                                className="w-full h-full object-contain" // object-contain to ensure video is fully visible
-                                autoPlay // Automatically starts playback
-                                loop // Makes the video loop continuously
-                                muted // Mutes the video, often required for autoplay
-                                playsInline // Important for iOS to allow inline playback
-                            >
-                                Your browser does not support the video tag.
-                            </video>
-                        </div>
-                        {selectedFirebasePlaylistId && ( // Show back button only when a playlist is selected
-                            <button
-                                onClick={handleBackToAvailableSongs}
-                                className="flex items-center px-4 py-2 bg-zinc-700 text-gray-300 font-bold rounded-full hover:bg-zinc-600 transition-colors duration-300 text-base ml-4 mt-2 sm:mt-0"
-                                title="Back to Available Songs"
-                            >
-                                <ArrowLeft size={20} className="mr-2" /> Back
-                            </button>
-                        )}
-                    </header>
+            {/* Right Section (Player and Current Song Display) */}
+                           <div className="w-full md:w-1/2 flex flex-col h-full min-h-0 md:pl-4 mt-4 md:mt-0"> {/* md:w-1/2, md:pl-4, mt-4/md:mt-0 for responsiveness */}
+                               {/* Header (Bamtify title and Back button) */}
+                               <header className="flex flex-col sm:flex-row items-center justify-between flex-shrink-0 mb-4">
+                                   <h1 className="text-4xl sm:text-5xl font-extrabold text-white flex-1">
+                                       Bamtify
+                                   </h1>
+                                   {selectedFirebasePlaylistId && ( // Show back button only when a playlist is selected
+                                       <button
+                                           onClick={handleBackToAvailableSongs}
+                                           className="flex items-center px-4 py-2 bg-zinc-700 text-gray-300 font-bold rounded-full hover:bg-zinc-600 transition-colors duration-300 text-base ml-4"
+                                           title="Back to Available Songs"
+                                       >
+                                           <ArrowLeft size={20} className="mr-2" /> Back
+                                       </button>
+                                   )}
+                               </header>
 
                     {/* Current Song Display & Video Thumbnail */}
                     <div className="relative bg-zinc-800 rounded-lg p-4 shadow-inner flex-shrink-0 mb-4 overflow-hidden" style={{ paddingTop: '56.25%' }}> {/* 16:9 aspect ratio */}
