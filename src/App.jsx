@@ -1027,7 +1027,7 @@ const App = () => {
                                     className="flex items-center px-4 py-2 bg-green-500 text-black font-bold rounded-full hover:bg-green-400 transition-colors duration-300 text-base"
                                     title="Add songs to this playlist"
                                 >
-                                    <Plus size={20} className="mr-2" /> Add Songs
+                                    <Plus size={20} className="mr-2" /> Add
                                 </button>
                             )}
                         </div>
