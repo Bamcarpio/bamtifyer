@@ -223,7 +223,7 @@ const AddSongsToPlaylistModal = ({ show, onClose, availableSongs, currentSongsIn
         const songsToAdd = selectedSongIds
             .filter(id => !currentSongsInPlaylist.some(s => s.id === id)) // Only add new songs
             .map(id => availableSongs.find(song => song.id === id));
-        onAddSongs(songsToAdd.filter(Boolean)); // Filter out any undefined if find fails
+        onAddSongs(songsToAdd.filter(Boolean)); // Filter out any undefined if find fail
         onClose();
     };
 
@@ -1093,23 +1093,29 @@ const App = () => {
                 </div>
 
             {/* Right Section (Player and Current Song Display) */}
-                           <div className="w-full md:w-1/2 flex flex-col h-full min-h-0 md:pl-4 mt-4 md:mt-0"> {/* md:w-1/2, md:pl-4, mt-4/md:mt-0 for responsiveness */}
-                               {/* Header (Bamtify title and Back button) */}
-                               <header className="flex flex-col sm:flex-row items-center justify-between flex-shrink-0 mb-4">
-                                   <h1 className="text-4xl sm:text-5xl font-extrabold text-white flex-1">
-                                       Bamtify
-                                   </h1>
-                                   {selectedFirebasePlaylistId && ( // Show back button only when a playlist is selected
-                                       <button
-                                           onClick={handleBackToAvailableSongs}
-                                           className="flex items-center px-4 py-2 bg-zinc-700 text-gray-300 font-bold rounded-full hover:bg-zinc-600 transition-colors duration-300 text-base ml-4"
-                                           title="Back to Available Songs"
-                                       >
-                                           <ArrowLeft size={20} className="mr-2" /> Back
-                                       </button>
-                                   )}
-                               </header>
-
+            <div className="w-full md:w-1/2 flex flex-col h-full min-h-0 md:pl-4 mt-4 md:mt-0"> {/* md:w-1/2, md:pl-4, mt-4/md:mt-0 for responsiveness */}
+                {/* Header (Bamtify title and Back button) */}
+               <header className="flex flex-col sm:flex-row items-center justify-between flex-shrink-0 mb-4">
+    <h1 className="text-4xl sm:text-5xl font-extrabold flex-1 relative text-green-500">
+        Bamtify
+        {/* Luffy's Straw Hat Overlay */}
+        <img
+            src="/images/luffy.gif" /* ENSURE THIS PATH IS CORRECT, e.g., "/images/luffyhat.png" */
+            alt="Luffy's Straw Hat"
+            /* Tailwind classes for positioning and sizing */
+            className="absolute top-[-25px]  left-12 w-20 h-auto z-10" /* Adjusted values, you will need to fine-tune */
+        />
+    </h1>
+    {selectedFirebasePlaylistId && ( // Show back button only when a playlist is selected
+        <button
+            onClick={handleBackToAvailableSongs}
+            className="flex items-center px-4 py-2 bg-zinc-700 text-gray-300 font-bold rounded-full hover:bg-zinc-600 transition-colors duration-300 text-base ml-4"
+            title="Back to Available Songs"
+        >
+            <ArrowLeft size={20} className="mr-2" /> Back
+        </button>
+    )}
+</header>
                     {/* Current Song Display & Video Thumbnail */}
                     <div className="relative bg-zinc-800 rounded-lg p-4 shadow-inner flex-shrink-0 mb-4 overflow-hidden" style={{ paddingTop: '56.25%' }}> {/* 16:9 aspect ratio */}
                         {defaultVideoSources.length > 0 && (
