@@ -964,7 +964,7 @@ const App = () => {
         <div className="min-h-screen bg-black text-white font-inter flex overflow-hidden"> {/* Added overflow-hidden */}
             {/* Left Sidebar for Playlists */}
             <aside className="w-64 bg-zinc-900 p-4 border-r border-zinc-800 flex flex-col h-screen overflow-hidden"> {/* Added h-screen, overflow-hidden */}
-                <h2 className="text-2xl font-bold mb-6 text-white">Deftnotgg</h2>
+                <h2 className="text-2xl font-bold mb-6 text-white">Defnotgg</h2>
                 <button
                     onClick={handleCreatePlaylist}
                     className="flex items-center justify-center px-4 py-2 mb-4 bg-green-500 text-black font-bold rounded-full hover:bg-green-400 transition-all duration-300 text-base"
