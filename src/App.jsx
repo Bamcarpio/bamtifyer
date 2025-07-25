@@ -70,7 +70,7 @@ const defaultAvailableSongsRaw = [
   { id: 'placeholder-29', title: 'DTfM', artist: 'Bad Bunny', filename: 'Bad Bunny - DtMF.mp3' },
   { id: 'placeholder-30', title: 'Ribs', artist: 'Lorde', filename: 'Ribs - Lorde.mp3' },
   { id: 'placeholder-31', title: 'Love Affair', artist: 'UMI', filename: 'UMI - Love Affair.mp3' },
-  { id: 'placeholder-32', title: 'The Scientist', artist: 'Coldplay', filename: 'Coldplay - The Scientist.mp3' },
+  { id: 'placeholder-32', title: 'Dantay', artist: 'Kiyo', filename: 'kiyo - Dantay.mp3' },
   { id: 'placeholder-33', title: "You'll Be in My Heart", artist: 'NIKI', filename: "NIKI - You'll be in my heart.mp3" },
   { id: 'placeholder-34', title: 'Iris', artist: 'Goo Goo Dolls', filename: 'Goo Goo Dolls - Iris.mp3' },
   { id: 'placeholder-35', title: 'Ikaw Lang', artist: 'Kiyo', filename: 'Kiyo - Ikaw Lang.mp3' },
@@ -964,7 +964,7 @@ const App = () => {
         <div className="min-h-screen bg-black text-white font-inter flex overflow-hidden"> {/* Added overflow-hidden */}
             {/* Left Sidebar for Playlists */}
             <aside className="w-64 bg-zinc-900 p-4 border-r border-zinc-800 flex flex-col h-screen overflow-hidden"> {/* Added h-screen, overflow-hidden */}
-                <h2 className="text-2xl font-bold mb-6 text-white">Deftnotgg</h2>
+                <h2 className="text-2xl font-bold mb-6 text-white">Defnotgg</h2>
                 <button
                     onClick={handleCreatePlaylist}
                     className="flex items-center justify-center px-4 py-2 mb-4 bg-green-500 text-black font-bold rounded-full hover:bg-green-400 transition-all duration-300 text-base"
