@@ -243,7 +243,7 @@ const defaultAvailableSongsRaw = [
   { id: 'placeholder-202', title: 'Scream', artist: 'Dreamcatcher', filename: 'Scream.mp3' },
   { id: 'placeholder-203', title: 'Yummy Yummy Love', artist: 'MOMOLAND & Natti Natasha', filename: 'Yummy Yummy Love.mp3' },
   { id: 'placeholder-204', title: 'BAAM', artist: 'MOMOLAND', filename: 'BAAM.mp3' },
-  { id: 'placeholder-205', title: 'Cheerleader', artist: 'OMI', filename: 'cheerleader.mp3' },
+  { id: 'placeholder-205', title: 'Cheerleader', artist: 'OMI', filename: 'Cheerleader.mp3' },
 ];
 
 const defaultAvailableSongs = defaultAvailableSongsRaw.map(song => ({
